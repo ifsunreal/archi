@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects | JCCHUA & Associates</title>
+  <meta name="description" content="Selected projects and concept studies by JCCHUA & Associates." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/projects.css" />
+</head>
+<body>
+  <video class="bg-scene" autoplay muted loop playsinline preload="metadata" poster="assets/images/leaves-exposed-to-rainwater-poster.jpg" aria-hidden="true">
+    <source src="assets/videos/treesbackground.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-scene-overlay" aria-hidden="true"></div>
+  <div class="top-progress" id="topProgress" aria-hidden="true"></div>
+  <div class="noise-bg" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <div class="container nav-wrap island">
+      <a class="brand" href="index.html" aria-label="JCCHUA and Associates home">
+        <span class="brand-mark">JC</span>
+        <span class="brand-text">JCCHUA & Associates</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <div class="nav-dropdown">
+          <a class="active" href="projects.html">Projects</a>
+          <div class="nav-dropdown-menu" aria-label="Projects submenu">
+            <a href="projects.html">All</a>
+            <a href="residential.html">Residential</a>
+            <a href="commercial.html">Commercial</a>
+          </div>
+        </div>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <button id="menuToggle" class="menu-toggle" aria-expanded="false" aria-controls="mobileMenu">Menu</button>
+    </div>
+    <nav id="mobileMenu" class="mobile-nav" aria-label="Mobile navigation">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="services.html">Services</a>
+      <a class="active" href="projects.html">Projects</a>
+      <a href="residential.html">Residential</a>
+      <a href="commercial.html">Commercial</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section container reveal" id="showcase">
+      <div class="section-head projects-head">
+        <div>
+          <p class="eyebrow">Design Showcase</p>
+          <h2>Architectural concepts and space studies</h2>
+        </div>
+        <p class="section-note">A curated carousel space for showcasing architectural design directions.</p>
+      </div>
+      <div class="carousel-shell" aria-label="Architectural showcase carousel">
+        <div class="carousel-thumbs-wrap">
+          <div class="carousel-thumbs" id="carouselThumbs" aria-label="Showcase thumbnails">
+            <button class="carousel-thumb active" type="button" data-index="0" aria-label="Go to showcase slide 1">
+              <img src="assets/images/projects-carousel-01.jpg" alt="Modern architectural exterior" />
+              <span>01</span>
+              <strong>Luxury frontage</strong>
+            </button>
+            <button class="carousel-thumb" type="button" data-index="1" aria-label="Go to showcase slide 2">
+              <img src="assets/images/projects-carousel-02.jpg" alt="Elegant interior architecture" />
+              <span>02</span>
+              <strong>Interior flow</strong>
+            </button>
+            <button class="carousel-thumb" type="button" data-index="2" aria-label="Go to showcase slide 3">
+              <img src="assets/images/projects-carousel-03.jpg" alt="Commercial architectural building" />
+              <span>03</span>
+              <strong>Commercial form</strong>
+            </button>
+            <button class="carousel-thumb" type="button" data-index="3" aria-label="Go to showcase slide 4">
+              <img src="assets/images/projects-carousel-04.jpg" alt="Warm architectural living space" />
+              <span>04</span>
+              <strong>Living spaces</strong>
+            </button>
+          </div>
+        </div>
+
+        <div class="carousel-panel">
+          <div class="carousel" aria-label="Architectural showcase carousel">
+            <button class="carousel-btn" id="carouselPrev" type="button" aria-label="Previous showcase slide">&#8249;</button>
+            <div class="carousel-viewport">
+              <div class="carousel-track" id="carouselTrack">
+                <article class="carousel-slide">
+                  <button class="carousel-zoom-btn" type="button" aria-label="View image fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                  <img src="assets/images/projects-carousel-01.jpg" alt="Modern architectural exterior" />
+                  <div class="carousel-caption">
+                    <p class="tag">Concept 01</p>
+                    <h3>Luxury residential frontage</h3>
+                  </div>
+                </article>
+                <article class="carousel-slide">
+                  <button class="carousel-zoom-btn" type="button" aria-label="View image fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                  <img src="assets/images/projects-carousel-02.jpg" alt="Elegant interior architecture" />
+                  <div class="carousel-caption">
+                    <p class="tag">Concept 02</p>
+                    <h3>Refined interior spatial flow</h3>
+                  </div>
+                </article>
+                <article class="carousel-slide">
+                  <button class="carousel-zoom-btn" type="button" aria-label="View image fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                  <img src="assets/images/projects-carousel-03.jpg" alt="Commercial architectural building" />
+                  <div class="carousel-caption">
+                    <p class="tag">Concept 03</p>
+                    <h3>Commercial form with presence</h3>
+                  </div>
+                </article>
+                <article class="carousel-slide">
+                  <button class="carousel-zoom-btn" type="button" aria-label="View image fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+                  <img src="assets/images/projects-carousel-04.jpg" alt="Warm architectural living space" />
+                  <div class="carousel-caption">
+                    <p class="tag">Concept 04</p>
+                    <h3>Warm material-led living spaces</h3>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <button class="carousel-btn" id="carouselNext" type="button" aria-label="Next showcase slide">&#8250;</button>
+          </div>
+          <div id="carouselDots" class="carousel-dots" aria-label="Showcase carousel pages"></div>
+        </div>
+      </div>
+
+      <div id="carouselLightbox" class="carousel-lightbox" aria-hidden="true">
+        <button class="carousel-lightbox-close" type="button" aria-label="Close full image view">&times;</button>
+        <button class="carousel-lightbox-prev" type="button" aria-label="Previous image">❮</button>
+        <div class="carousel-lightbox-media">
+          <img id="carouselLightboxImage" src="" alt="" />
+          <p id="carouselLightboxCaption" class="carousel-lightbox-caption"></p>
+        </div>
+        <button class="carousel-lightbox-next" type="button" aria-label="Next image">❯</button>
+      </div>
+    </section>
+
+    <section class="section container reveal" id="projects">
+      <div class="section-head">
+        <h2>Residential and commercial work</h2>
+      </div>
+
+      <div class="project-status-guide" aria-label="Project category explanation">
+        <article class="status-guide-card">
+          <p class="tag">Concept and Rendered Works</p>
+          <h3>Design proposals and visualization studies</h3>
+          <p>
+            Includes design proposals, planning studies, and rendered presentations developed to evaluate
+            program, spatial direction, and architectural expression prior to construction.
+          </p>
+        </article>
+        <article class="status-guide-card">
+          <p class="tag">Completed and Built Works</p>
+          <h3>Projects realized through construction</h3>
+          <p>
+            Includes projects that proceeded to site implementation and were completed,
+            representing executed architectural scope.
+          </p>
+        </article>
+      </div>
+      <p class="section-note project-disclosure">
+        Portfolio note: selected visuals may represent conceptual design studies and rendered direction work,
+        while others document completed built projects.
+      </p>
+
+      <article class="project-spotlight" aria-live="polite">
+        <img id="spotlightImage" src="assets/images/mckinley-west-residence.jpg" alt="Featured project image" />
+        <div class="project-spotlight-copy">
+          <p class="tag">Featured Project</p>
+          <h3 id="spotlightTitle">Mckinley West Residence</h3>
+          <p id="spotlightType" class="spotlight-type">Residential</p>
+          <p id="spotlightDescription" class="spotlight-description">
+            A climate-responsive residence balancing privacy, airflow, and long-term maintenance efficiency.
+          </p>
+          <div class="spotlight-points">
+            <span>Climate-sensitive planning</span>
+            <span>Cost-aware design decisions</span>
+            <span>Resilient material strategy</span>
+          </div>
+        </div>
+      </article>
+
+      <div class="project-grid">
+        <article class="project-card" data-type="residential" data-stage="accomplished" tabindex="0" data-description="A climate-responsive residence balancing privacy, airflow, and long-term maintenance efficiency.">
+          <img src="assets/images/mckinley-west-residence.jpg" alt="Residential project" />
+          <div>
+            <p class="tag">Residential</p>
+            <p class="status-pill status-pill-accomplished">Completed / Built</p>
+            <h3>Mckinley West Residence</h3>
+          </div>
+        </article>
+        <article class="project-card" data-type="commercial" data-stage="accomplished" tabindex="0" data-description="A midrise office concept designed for functional flow, identity, and urban presence.">
+          <img src="assets/images/sta-mesa-office-building.jpg" alt="Commercial office building" />
+          <div>
+            <p class="tag">Commercial</p>
+            <p class="status-pill status-pill-accomplished">Completed / Built</p>
+            <h3>Sta. Mesa Office Building</h3>
+          </div>
+        </article>
+        <article class="project-card" data-type="residential" data-stage="rendered" tabindex="0" data-description="A family-oriented home concept with adaptable zones for changing needs over time.">
+          <img src="assets/images/projects-carousel-02.jpg" alt="Contemporary family residence" />
+          <div>
+            <p class="tag">Residential</p>
+            <p class="status-pill status-pill-rendered">Concept / Rendered</p>
+            <h3>Flexible Family Residence</h3>
+          </div>
+        </article>
+        <article class="project-card" data-type="commercial" data-stage="rendered" tabindex="0" data-description="A mixed-use proposal that pairs strong commercial identity with energy-conscious planning.">
+          <img src="assets/images/projects-carousel-03.jpg" alt="Mixed-use complex" />
+          <div>
+            <p class="tag">Commercial</p>
+            <p class="status-pill status-pill-rendered">Concept / Rendered</p>
+            <h3>Climate-Ready Mixed Use</h3>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-wrap">
+      <p>© 2026 JCCHUA & Associates. All rights reserved.</p>
+      <div class="footer-actions">
+        <a class="social-link" href="contact.html" aria-label="Facebook contact" title="Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.2-1.5 1.6-1.5h1.7V4.5c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.3V14h2.7v8h3.5z"/></svg>
+        </a>
+        <a class="social-link" href="contact.html" aria-label="Twitter contact" title="Twitter">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.8 7.3c.01.2.01.4.01.6 0 6.1-4.6 13.2-13.2 13.2-2.6 0-5-.8-7-2.2.4 0 .8.1 1.2.1 2.1 0 4.1-.7 5.7-1.9-2-.1-3.7-1.4-4.3-3.3.3.1.7.1 1 .1.4 0 .8-.1 1.1-.1-2.1-.4-3.7-2.3-3.7-4.5v-.1c.6.3 1.4.5 2.1.5-1.3-.8-2.1-2.2-2.1-3.7 0-.8.2-1.6.6-2.3 2.3 2.8 5.7 4.6 9.5 4.8-.1-.3-.1-.7-.1-1 0-2.4 2-4.4 4.4-4.4 1.3 0 2.4.5 3.2 1.4.9-.2 1.8-.5 2.5-1-.3.9-1 1.7-1.8 2.1.8-.1 1.6-.3 2.3-.6-.6.8-1.2 1.5-2 2.1z"/></svg>
+        </a>
+        <a class="social-link" href="contact.html" aria-label="Google contact" title="Google">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.4c-.2 1-.8 2.1-1.8 2.8v2.3h2.9c1.7-1.6 3.1-4.1 3.1-6.8zM12 22c2.5 0 4.6-.8 6.1-2.2l-2.9-2.3c-.8.5-1.8.8-3.2.8-2.5 0-4.7-1.7-5.4-4H3.6v2.4C5.1 19.6 8.3 22 12 22zM6.6 14.3c-.2-.7-.4-1.5-.4-2.3s.1-1.6.4-2.3V7.3H3.6C2.9 8.7 2.5 10.3 2.5 12s.4 3.3 1.1 4.7l3-2.4zM12 5.8c1.4 0 2.7.5 3.7 1.5l2.8-2.8C16.6 3 14.5 2 12 2 8.3 2 5.1 4.4 3.6 7.3l3 2.4c.7-2.3 2.9-3.9 5.4-3.9z"/></svg>
+        </a>
+      </div>
+      <a class="back-to-top" href="#top">Back to top</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
