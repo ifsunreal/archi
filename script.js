@@ -687,6 +687,27 @@ syncCarouselState();
 startCarouselThumbAutoScroll();
 startCarouselAutoAdvance();
 
+// Project filtering
+const filterTabs = document.querySelectorAll(".filter-tab");
+const projectCardElements = document.querySelectorAll(".project-card");
+
+if (filterTabs.length > 0) {
+  filterTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const selectedFilter = tab.dataset.filter;
+
+      filterTabs.forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+
+      projectCardElements.forEach((card) => {
+        const cardType = card.dataset.type;
+        const isVisible = selectedFilter === "all" || cardType === selectedFilter;
+        card.classList.toggle("hidden", !isVisible);
+      });
+    });
+  });
+}
+
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     pauseCarouselAutoAdvance();
