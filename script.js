@@ -1193,9 +1193,479 @@ const form = document.getElementById("contactForm");
 const formMessage = document.getElementById("formMessage");
 const backToTopLinks = document.querySelectorAll(".back-to-top");
 
+function initializePhilippineAddressFields() {
+  if (!form || !formMessage) {
+    return null;
+  }
+
+  const provinceCityInput = form.querySelector('input[name="provinceCity"]');
+  const municipalityCityInput = form.querySelector('input[name="municipalityCity"]');
+  const barangayInput = form.querySelector('input[name="barangay"]');
+  const postalCodeInput = form.querySelector('input[name="postalCode"]');
+  const provinceCityList = document.getElementById("provinceCitySuggestions");
+  const municipalityList = document.getElementById("municipalitySuggestions");
+  const barangayList = document.getElementById("barangaySuggestions");
+  const addressHint = document.getElementById("addressHint");
+
+  if (!provinceCityInput || !municipalityCityInput || !barangayInput || !postalCodeInput || !provinceCityList || !municipalityList || !barangayList || !addressHint) {
+    return null;
+  }
+
+  const psgcApiBase = "https://psgc.gitlab.io/api";
+  const psgcCache = new Map();
+  const addressState = {
+    lookupReady: false,
+    provinceCityEntries: [],
+    municipalityMasterEntries: [],
+    municipalityEntries: [],
+    barangayEntries: [],
+    selectedProvinceCity: null,
+    selectedLocality: null,
+    selectedBarangayParent: null,
+  };
+
+  const defaultHint = "Choose a province first. The next fields unlock based on your selection.";
+
+  function normalizeSearchText(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .replace(/\s+/g, " ");
+  }
+
+  function formatCityName(name) {
+    if (name.startsWith("City of ")) {
+      return `${name.slice(8)} City`;
+    }
+
+    if (name.startsWith("Science City of ")) {
+      return `${name.slice(16)} Science City`;
+    }
+
+    if (name.startsWith("Island Garden City of ")) {
+      return `${name.slice(22)} Island Garden City`;
+    }
+
+    return name;
+  }
+
+  function toDisplayName(record, kind) {
+    if (kind === "city") {
+      return formatCityName(record.name);
+    }
+
+    return record.name;
+  }
+
+  function createEntry(record, kind) {
+    const displayName = toDisplayName(record, kind);
+    const searchTerms = [record.name, displayName, record.oldName || ""]
+      .map(normalizeSearchText)
+      .filter(Boolean)
+      .join(" ");
+
+    return {
+      code: record.code,
+      kind,
+      name: record.name,
+      displayName,
+      provinceCode: record.provinceCode || "",
+      searchTerms,
+    };
+  }
+
+  function sortEntries(entries) {
+    return entries.sort((left, right) => {
+      const leftName = normalizeSearchText(left.displayName);
+      const rightName = normalizeSearchText(right.displayName);
+      return leftName.localeCompare(rightName, "en", { sensitivity: "base" }) || left.displayName.localeCompare(right.displayName, "en", { sensitivity: "base" });
+    });
+  }
+
+  function fillDatalist(listElement, entries) {
+    listElement.replaceChildren(
+      ...entries.map((entry) => {
+        const option = document.createElement("option");
+        option.value = entry.displayName;
+        return option;
+      })
+    );
+  }
+
+  function resolveEntry(entries, value) {
+    const normalizedValue = normalizeSearchText(value);
+    if (!normalizedValue) {
+      return null;
+    }
+
+    return entries.find((entry) => {
+      const matchesDisplayName = normalizeSearchText(entry.displayName) === normalizedValue;
+      const matchesOfficialName = normalizeSearchText(entry.name) === normalizedValue;
+      return matchesDisplayName || matchesOfficialName;
+    }) || null;
+  }
+
+  function filterEntriesByPrefix(entries, value) {
+    const normalizedValue = normalizeSearchText(value);
+    if (!normalizedValue) {
+      return entries;
+    }
+
+    return entries.filter((entry) => {
+      const displayName = normalizeSearchText(entry.displayName);
+      const officialName = normalizeSearchText(entry.name);
+      return displayName.startsWith(normalizedValue) || officialName.startsWith(normalizedValue);
+    });
+  }
+
+  function setFieldValidity(input, isValid, message) {
+    if (!addressState.lookupReady) {
+      input.setCustomValidity("");
+      return;
+    }
+
+    input.setCustomValidity(isValid ? "" : message);
+  }
+
+  function setAddressHint(text) {
+    addressHint.textContent = text;
+  }
+
+  function resetBarangayField() {
+    barangayInput.value = "";
+    barangayInput.disabled = true;
+    barangayInput.required = false;
+    barangayInput.placeholder = "Choose after municipality/city";
+    barangayInput.setCustomValidity("");
+    addressState.barangayEntries = [];
+    fillDatalist(barangayList, []);
+  }
+
+  function resetLocalityField() {
+    municipalityCityInput.value = "";
+    municipalityCityInput.disabled = true;
+    municipalityCityInput.required = false;
+    municipalityCityInput.placeholder = "Choose after province";
+    municipalityCityInput.setCustomValidity("");
+    addressState.municipalityEntries = [];
+    fillDatalist(municipalityList, []);
+  }
+
+  function clearAddressSelection(preserveProvinceValidity = false) {
+    addressState.selectedProvinceCity = null;
+    addressState.selectedLocality = null;
+    addressState.selectedBarangayParent = null;
+    if (!preserveProvinceValidity) {
+      provinceCityInput.setCustomValidity("");
+    }
+    resetLocalityField();
+    resetBarangayField();
+    setAddressHint(defaultHint);
+  }
+
+  async function loadJson(url) {
+    if (psgcCache.has(url)) {
+      return psgcCache.get(url);
+    }
+
+    const response = await fetch(url, { credentials: "omit" });
+    if (!response.ok) {
+      throw new Error(`Failed to load ${url}`);
+    }
+
+    const data = await response.json();
+    psgcCache.set(url, data);
+    return data;
+  }
+
+  async function loadFirstWorkingJson(urls) {
+    for (const url of urls) {
+      try {
+        return await loadJson(url);
+      } catch {
+        // Try the next PSGC endpoint variant.
+      }
+    }
+
+    return [];
+  }
+
+  async function loadAddressData() {
+    try {
+      const [provincesData, citiesData, municipalitiesData] = await Promise.all([
+        loadJson(`${psgcApiBase}/provinces.json`),
+        loadJson(`${psgcApiBase}/cities.json`),
+        loadJson(`${psgcApiBase}/municipalities.json`),
+      ]);
+
+      const provinceEntries = provincesData.map((record) => createEntry(record, "province"));
+      const cityEntries = citiesData.map((record) => createEntry(record, "city"));
+      const municipalityEntries = municipalitiesData.map((record) => createEntry(record, "municipality"));
+      addressState.provinceCityEntries = sortEntries(provinceEntries);
+      addressState.municipalityMasterEntries = sortEntries([...municipalityEntries, ...cityEntries]);
+      addressState.municipalityEntries = [];
+      addressState.lookupReady = true;
+
+      fillDatalist(provinceCityList, addressState.provinceCityEntries);
+      fillDatalist(municipalityList, []);
+      fillDatalist(barangayList, []);
+    } catch {
+      addressState.lookupReady = false;
+      setAddressHint("Address suggestions are temporarily unavailable. You can still type the address manually.");
+    }
+  }
+
+  function getLocalityEntriesForProvince(provinceCode) {
+    return sortEntries(addressState.municipalityMasterEntries.filter((entry) => entry.provinceCode === provinceCode));
+  }
+
+  async function loadBarangaysForParent(parentEntry) {
+    addressState.selectedBarangayParent = parentEntry;
+
+    const endpoints = parentEntry.kind === "city"
+      ? [
+        `${psgcApiBase}/cities/${parentEntry.code}/barangays.json`,
+        `${psgcApiBase}/cities/${parentEntry.code}/barangays`,
+      ]
+      : [
+        `${psgcApiBase}/municipalities/${parentEntry.code}/barangays.json`,
+        `${psgcApiBase}/municipalities/${parentEntry.code}/barangays`,
+      ];
+
+    const barangaysData = await loadFirstWorkingJson(endpoints);
+    addressState.barangayEntries = sortEntries(barangaysData.map((record) => createEntry(record, "barangay")));
+    fillDatalist(barangayList, addressState.barangayEntries);
+    barangayInput.disabled = false;
+    barangayInput.required = true;
+    barangayInput.placeholder = "Start typing a barangay";
+
+    if (addressState.barangayEntries.length === 0) {
+      setAddressHint(`Barangays for ${parentEntry.displayName} could not be loaded. You can enter the barangay manually.`);
+      barangayInput.setCustomValidity("");
+      return;
+    }
+
+    setAddressHint(`Selected ${parentEntry.displayName}. Finish by choosing the barangay.`);
+  }
+
+  function refreshMunicipalitySuggestions() {
+    if (!addressState.selectedProvinceCity) {
+      fillDatalist(municipalityList, []);
+      return;
+    }
+
+    const localityEntries = getLocalityEntriesForProvince(addressState.selectedProvinceCity.code);
+    addressState.municipalityEntries = localityEntries;
+    fillDatalist(municipalityList, filterEntriesByPrefix(localityEntries, municipalityCityInput.value));
+  }
+
+  function refreshBarangaySuggestions() {
+    if (addressState.selectedBarangayParent) {
+      void loadBarangaysForParent(addressState.selectedBarangayParent);
+    }
+  }
+
+  function syncProvinceCitySelection(options = {}) {
+    const { autoAdvance = false, validationOnly = false } = options;
+    const selectedEntry = resolveEntry(addressState.provinceCityEntries, provinceCityInput.value);
+
+    if (!provinceCityInput.value.trim()) {
+      clearAddressSelection();
+      return;
+    }
+
+    setFieldValidity(
+      provinceCityInput,
+      Boolean(selectedEntry) || !addressState.lookupReady,
+      "Please select a province from the suggestions."
+    );
+
+    if (!selectedEntry) {
+      clearAddressSelection(true);
+      return;
+    }
+
+    if (validationOnly) {
+      const localityEntries = getLocalityEntriesForProvince(selectedEntry.code);
+      const selectedLocality = resolveEntry(localityEntries, municipalityCityInput.value);
+      const hasMunicipalityValue = Boolean(municipalityCityInput.value.trim());
+      setFieldValidity(
+        municipalityCityInput,
+        Boolean(selectedLocality) || !hasMunicipalityValue || !addressState.lookupReady,
+        "Please select a municipality or city from the suggestions."
+      );
+      return;
+    }
+
+    addressState.selectedProvinceCity = selectedEntry;
+    addressState.selectedLocality = null;
+    addressState.selectedBarangayParent = null;
+    resetBarangayField();
+
+    const localityEntries = getLocalityEntriesForProvince(selectedEntry.code);
+    addressState.municipalityEntries = localityEntries;
+    fillDatalist(municipalityList, localityEntries);
+
+    municipalityCityInput.disabled = false;
+    municipalityCityInput.required = true;
+    municipalityCityInput.placeholder = "Start typing a municipality or city";
+    municipalityCityInput.value = "";
+    municipalityCityInput.setCustomValidity("");
+    setAddressHint(`Selected ${selectedEntry.displayName}. Choose the municipality or city next.`);
+
+    if (autoAdvance) {
+      municipalityCityInput.focus();
+    }
+
+    return;
+  }
+
+  function syncMunicipalitySelection(options = {}) {
+    const { autoAdvance = false, validationOnly = false } = options;
+
+    if (!addressState.selectedProvinceCity) {
+      return;
+    }
+
+    const localityEntries = addressState.municipalityEntries;
+    const selectedEntry = resolveEntry(localityEntries, municipalityCityInput.value);
+
+    if (!municipalityCityInput.value.trim()) {
+      resetBarangayField();
+      setAddressHint(`Selected ${addressState.selectedProvinceCity.displayName}. Choose the municipality or city next.`);
+      return;
+    }
+
+    setFieldValidity(
+      municipalityCityInput,
+      Boolean(selectedEntry) || !addressState.lookupReady,
+      "Please select a municipality or city from the suggestions."
+    );
+
+    if (!selectedEntry) {
+      resetBarangayField();
+      return;
+    }
+
+    if (validationOnly) {
+      return;
+    }
+
+    addressState.selectedLocality = selectedEntry;
+    addressState.selectedBarangayParent = selectedEntry;
+    loadBarangaysForParent(selectedEntry).then(() => {
+      if (autoAdvance) {
+        barangayInput.focus();
+      }
+    }).catch(() => {
+      setAddressHint(`Barangay suggestions for ${selectedEntry.displayName} could not be loaded. You can enter it manually.`);
+      barangayInput.disabled = false;
+      barangayInput.required = false;
+      barangayInput.setCustomValidity("");
+
+      if (autoAdvance) {
+        barangayInput.focus();
+      }
+    });
+  }
+
+  function syncBarangaySelection() {
+    if (barangayInput.disabled) {
+      barangayInput.setCustomValidity("");
+      return;
+    }
+
+    const selectedEntry = resolveEntry(addressState.barangayEntries, barangayInput.value);
+
+    if (!barangayInput.value.trim()) {
+      setFieldValidity(barangayInput, true, "");
+      return;
+    }
+
+    setFieldValidity(
+      barangayInput,
+      Boolean(selectedEntry) || !addressState.lookupReady,
+      "Please select a barangay from the suggestions."
+    );
+  }
+
+  provinceCityInput.addEventListener("input", () => {
+    provinceCityInput.setCustomValidity("");
+    municipalityCityInput.closest("label").hidden = false;
+    clearAddressSelection();
+    fillDatalist(provinceCityList, filterEntriesByPrefix(addressState.provinceCityEntries, provinceCityInput.value));
+
+    if (resolveEntry(addressState.provinceCityEntries, provinceCityInput.value)) {
+      syncProvinceCitySelection({ autoAdvance: true });
+    }
+  });
+
+  provinceCityInput.addEventListener("change", syncProvinceCitySelection);
+  provinceCityInput.addEventListener("blur", syncProvinceCitySelection);
+
+  municipalityCityInput.addEventListener("focus", refreshMunicipalitySuggestions);
+  municipalityCityInput.addEventListener("input", () => {
+    municipalityCityInput.setCustomValidity("");
+    barangayInput.value = "";
+    barangayInput.setCustomValidity("");
+    resetBarangayField();
+    fillDatalist(municipalityList, filterEntriesByPrefix(addressState.municipalityEntries, municipalityCityInput.value));
+
+    if (resolveEntry(addressState.municipalityEntries, municipalityCityInput.value)) {
+      syncMunicipalitySelection({ autoAdvance: true });
+    }
+  });
+
+  municipalityCityInput.addEventListener("change", syncMunicipalitySelection);
+  municipalityCityInput.addEventListener("blur", syncMunicipalitySelection);
+
+  barangayInput.addEventListener("focus", refreshBarangaySuggestions);
+  barangayInput.addEventListener("input", () => {
+    barangayInput.setCustomValidity("");
+    fillDatalist(barangayList, filterEntriesByPrefix(addressState.barangayEntries, barangayInput.value));
+
+    if (resolveEntry(addressState.barangayEntries, barangayInput.value)) {
+      postalCodeInput.focus();
+    }
+  });
+
+  barangayInput.addEventListener("change", syncBarangaySelection);
+  barangayInput.addEventListener("blur", syncBarangaySelection);
+
+  form.addEventListener("reset", () => {
+    window.setTimeout(() => {
+      municipalityCityInput.closest("label").hidden = false;
+      clearAddressSelection();
+      provinceCityInput.value = "";
+      municipalityCityInput.value = "";
+      barangayInput.value = "";
+      fillDatalist(provinceCityList, addressState.provinceCityEntries);
+    }, 0);
+  });
+
+  void loadAddressData();
+
+  return {
+    syncProvinceCitySelection,
+    syncMunicipalitySelection,
+    syncBarangaySelection,
+  };
+}
+
+const addressFields = initializePhilippineAddressFields();
+
 if (form && formMessage) {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+
+    if (addressFields) {
+      addressFields.syncProvinceCitySelection({ validationOnly: true });
+      addressFields.syncMunicipalitySelection({ validationOnly: true });
+      addressFields.syncBarangaySelection();
+    }
 
     if (!form.checkValidity()) {
       formMessage.textContent = "Please complete all required fields.";

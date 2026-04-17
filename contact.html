@@ -54,11 +54,11 @@
           <div class="form-grid">
             <label>
               Name *
-              <input type="text" name="name" autocomplete="name" required />
+              <input type="text" name="name" autocomplete="name" placeholder="First Name and Last Name" required />
             </label>
             <label>
               Email *
-              <input type="email" name="email" autocomplete="email" required />
+              <input type="email" name="email" autocomplete="email" placeholder="example@gmail.com" required />
             </label>
             <label>
               Mobile Number *
@@ -87,9 +87,51 @@
                 <option value="consulting">Technical Consulting</option>
               </select>
             </label>
+            <label class="field-wide">
+              Province *
+              <input
+                type="text"
+                name="provinceCity"
+                list="provinceCitySuggestions"
+                autocomplete="off"
+                placeholder="Select your province"
+                required
+              />
+              <datalist id="provinceCitySuggestions"></datalist>
+            </label>
+            <p class="address-hint field-wide" id="addressHint">Choose a province first. The next fields unlock based on your selection.</p>
             <label>
-              Site Location *
-              <input type="text" name="location" placeholder="City / Province" required />
+              Municipality / City
+              <input
+                type="text"
+                name="municipalityCity"
+                list="municipalitySuggestions"
+                autocomplete="off"
+                placeholder="Choose after province"
+                disabled
+              />
+              <datalist id="municipalitySuggestions"></datalist>
+            </label>
+            <label>
+              Barangay *
+              <input
+                type="text"
+                name="barangay"
+                list="barangaySuggestions"
+                autocomplete="off"
+                placeholder="Choose after municipality/city"
+                required
+                disabled
+              />
+              <datalist id="barangaySuggestions"></datalist>
+            </label>
+            <label>
+              Postal Code *
+              <input type="text" name="postalCode" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{4}" maxlength="4" placeholder="1300" required />
+            </label>
+            <label class="field-wide">
+              Additional Address Details
+              <textarea name="addressDetails" rows="3" placeholder="Street name, house number, barangay, building, landmark..."></textarea>
             </label>
             <label class="field-wide">
               Message *

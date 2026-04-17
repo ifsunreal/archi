@@ -55,6 +55,13 @@ select {
   font: inherit;
 }
 
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 input:focus,
 textarea:focus,
 select:focus {
@@ -133,6 +140,13 @@ select:focus {
 .contact-note {
   margin-top: 1rem;
   color: var(--muted);
+}
+
+.address-hint {
+  margin: -0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
 }
 
 .form-message {
