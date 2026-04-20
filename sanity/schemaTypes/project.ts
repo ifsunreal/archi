@@ -2,7 +2,7 @@ import { defineArrayMember, defineField, defineType } from "sanity";
 
 export const projectSchema = defineType({
   name: "project",
-  title: "Portfolio Project",
+  title: "Project",
   type: "document",
   fields: [
     defineField({

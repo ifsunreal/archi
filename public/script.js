@@ -11,54 +11,8 @@ const carouselThumbs = document.getElementById("carouselThumbs");
 const carouselThumbButtons = carouselThumbs
   ? Array.from(carouselThumbs.querySelectorAll(".carousel-thumb"))
   : [];
-const navLinks = Array.from(document.querySelectorAll(".site-nav a, .mobile-nav a"));
-const isStaticHtmlNavigation = navLinks.some((link) => {
-  const href = link.getAttribute("href") || "";
-  return href.endsWith(".html");
-});
 
-function getCurrentPageName() {
-  const path = window.location.pathname.split("/").pop() || "index.html";
-  return path.toLowerCase();
-}
-
-function normalizeNavHref(href) {
-  if (!href) {
-    return "";
-  }
-
-  return href.split("#")[0].split("?")[0].toLowerCase() || "index.html";
-}
-
-function updateActiveNavLinks() {
-  if (!isStaticHtmlNavigation) {
-    return;
-  }
-
-  const currentPage = getCurrentPageName();
-  const isProjectSectionPage = currentPage === "residential.html" || currentPage === "commercial.html";
-
-  navLinks.forEach((link) => {
-    const isDropdownLink = Boolean(link.closest(".nav-dropdown-menu"));
-    const linkPage = normalizeNavHref(link.getAttribute("href"));
-    const isResidentialOrCommercialLink = linkPage === "residential.html" || linkPage === "commercial.html";
-    const isProjectsParent = linkPage === "projects.html" && (currentPage === "projects.html" || isProjectSectionPage);
-
-    let isActive = false;
-
-    if (!isDropdownLink) {
-      isActive = linkPage === currentPage || isProjectsParent;
-    } else if (isResidentialOrCommercialLink) {
-      isActive = linkPage === currentPage;
-    } else {
-      isActive = linkPage === "projects.html" && currentPage === "projects.html";
-    }
-
-    link.classList.toggle("active", isActive);
-  });
-}
-
-if (menuToggle && mobileMenu && isStaticHtmlNavigation) {
+if (menuToggle && mobileMenu) {
   menuToggle.addEventListener("click", () => {
     const isOpen = mobileMenu.classList.toggle("open");
     menuToggle.setAttribute("aria-expanded", String(isOpen));
@@ -776,10 +730,6 @@ if (spotlightPreviewImage) {
   spotlightPreviewImage.addEventListener("click", () => {
     openCarouselLightbox(spotlightPreviewImage.src, spotlightPreviewImage.alt);
   });
-}
-
-if (isStaticHtmlNavigation) {
-  updateActiveNavLinks();
 }
 
 function updateProjectSpotlight(card) {

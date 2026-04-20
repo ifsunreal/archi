@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
+import { SiteRuntimeScript } from "../components/site-runtime-script";
 
 export const metadata: Metadata = {
   title: "JCCHUA & Associates",
@@ -16,7 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
-        <Script src="/script.js" strategy="afterInteractive" />
+        <SiteRuntimeScript />
       </body>
     </html>
   );
