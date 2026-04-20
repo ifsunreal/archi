@@ -1,11 +1,9 @@
 import { createClient } from "next-sanity";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
+const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "vel2g5w8";
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 
-if (!projectId) {
-  throw new Error("Missing NEXT_PUBLIC_SANITY_PROJECT_ID");
-}
+export const isSanityConfigured = true;
 
 export const client = createClient({
   projectId,

@@ -51,36 +51,6 @@ export const projectSchema = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: "description",
-      title: "Description",
-      type: "array",
-      of: [defineArrayMember({ type: "block" })],
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: "gallery",
-      title: "Gallery Images",
-      type: "array",
-      of: [
-        defineArrayMember({
-          type: "image",
-          options: { hotspot: true },
-          fields: [
-            defineField({
-              name: "alt",
-              title: "Alt Text",
-              type: "string",
-            }),
-          ],
-        }),
-      ],
-    }),
-    defineField({
-      name: "location",
-      title: "Location",
-      type: "string",
-    }),
-    defineField({
       name: "status",
       title: "Project Status",
       type: "string",

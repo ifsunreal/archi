@@ -48,20 +48,29 @@ body::before {
   z-index: -3;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% 18%, rgba(7, 13, 10, 0.34), transparent 48%),
-    linear-gradient(180deg, rgba(7, 13, 10, 0.34), rgba(7, 13, 10, 0.56));
+    linear-gradient(180deg, rgba(8, 12, 10, 0.48), rgba(8, 12, 10, 0.62)),
+    url("../assets/images/forest-background.jpg") center / cover no-repeat;
 }
 
 .bg-scene {
-  position: fixed;
-  inset: 0;
-  z-index: -4;
+  display: none;
+}
+
+.studio-shell {
+  min-height: 100dvh;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  opacity: 0.72;
-  background: radial-gradient(circle at 18% 22%, #6f8f7a 0%, #4f6f5c 44%, #405b4b 100%);
+}
+
+.studio-shell > div,
+.studio-shell iframe,
+.studio-shell [data-sanity-studio] {
+  width: 100%;
+  min-height: 100dvh;
+}
+
+/* Hide Studio's built-in All Fields tab and keep custom section tabs only. */
+.studio-shell [role="tablist"] > *:first-child {
+  display: none !important;
 }
 
 h1,

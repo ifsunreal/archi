@@ -66,14 +66,11 @@ type PageProps = {
 };
 
 export default async function ContactPage() {
-  const content = await client.fetch<ContactContent | null>(contactQuery);
+  const content = client ? await client.fetch<ContactContent | null>(contactQuery) : null;
   const contact = { ...defaultContact, ...(content?.contact ?? {}) };
   return (
     <>
       <SiteHeader />
-      <video className="bg-scene" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
-        <source src="/assets/videos/treesbackground.mp4" type="video/mp4" />
-      </video>
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>

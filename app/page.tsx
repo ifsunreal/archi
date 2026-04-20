@@ -90,10 +90,12 @@ type PageProps = {
 };
 
 export default async function HomePage() {
-  const [siteContent, projects] = await Promise.all([
-    client.fetch<SiteContent | null>(siteContentQuery),
-    client.fetch<ProjectCard[]>(projectsQuery),
-  ]);
+  const [siteContent, projects] = client
+    ? await Promise.all([
+      client.fetch<SiteContent | null>(siteContentQuery),
+      client.fetch<ProjectCard[]>(projectsQuery),
+    ])
+    : [null, [] as ProjectCard[]];
 
   const { home } = siteContent ?? {};
   const featuredProject = projects[0];
@@ -136,9 +138,6 @@ export default async function HomePage() {
   return (
     <>
       <SiteHeader />
-      <video className="bg-scene" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
-        <source src="/assets/videos/treesbackground.mp4" type="video/mp4" />
-      </video>
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>

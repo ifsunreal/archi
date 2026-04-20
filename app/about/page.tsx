@@ -133,15 +133,12 @@ type PageProps = {
 };
 
 export default async function AboutPage() {
-  const content = await client.fetch<AboutContent | null>(aboutQuery);
+  const content = client ? await client.fetch<AboutContent | null>(aboutQuery) : null;
   const about = { ...defaultAbout, ...(content?.about ?? {}) };
 
   return (
     <>
       <SiteHeader />
-      <video className="bg-scene" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
-        <source src="/assets/videos/treesbackground.mp4" type="video/mp4" />
-      </video>
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>

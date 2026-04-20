@@ -61,9 +61,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   return (
     <>
       <SiteHeader />
-      <video className="bg-scene" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
-        <source src="/assets/videos/treesbackground.mp4" type="video/mp4" />
-      </video>
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>

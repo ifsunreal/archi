@@ -136,10 +136,12 @@ type PageProps = {
 };
 
 export default async function ProjectsPage() {
-  const [projectsContent, projects] = await Promise.all([
-    client.fetch<ProjectsContent | null>(projectsContentQuery),
-    client.fetch<ProjectItem[]>(projectsQuery),
-  ]);
+  const [projectsContent, projects] = client
+    ? await Promise.all([
+      client.fetch<ProjectsContent | null>(projectsContentQuery),
+      client.fetch<ProjectItem[]>(projectsQuery),
+    ])
+    : [null, [] as ProjectItem[]];
   const content = { ...defaultProjectsContent, ...(projectsContent?.projects ?? {}) };
   const slides = content.carouselSlides?.length ? content.carouselSlides : defaultProjectsContent.carouselSlides;
   const statusGuideCards = content.statusGuideCards?.length ? content.statusGuideCards : defaultProjectsContent.statusGuideCards;
@@ -148,9 +150,6 @@ export default async function ProjectsPage() {
   return (
     <>
       <SiteHeader />
-      <video className="bg-scene" autoPlay muted loop playsInline preload="auto" aria-hidden="true">
-        <source src="/assets/videos/treesbackground.mp4" type="video/mp4" />
-      </video>
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>
