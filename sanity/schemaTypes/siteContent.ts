@@ -243,32 +243,6 @@ export const siteContentSchema = defineType({
       type: "object",
       group: "projects",
       fields: [
-        defineField({ name: "showcaseEyebrow", title: "Showcase Eyebrow", type: "string" }),
-        defineField({ name: "showcaseTitle", title: "Showcase Title", type: "string" }),
-        defineField({ name: "showcaseNote", title: "Showcase Note", type: "string" }),
-        defineField({
-          name: "carouselSlides",
-          title: "Carousel Slides",
-          type: "array",
-          of: [
-            defineArrayMember({
-              type: "object",
-              fields: [
-                defineField({ name: "tag", title: "Tag", type: "string" }),
-                defineField({ name: "title", title: "Title", type: "string" }),
-                defineField({
-                  name: "image",
-                  title: "Image",
-                  type: "image",
-                  options: { hotspot: true },
-                  fields: [
-                    defineField({ name: "alt", title: "Alt Text", type: "string" }),
-                  ],
-                }),
-              ],
-            }),
-          ],
-        }),
         defineField({ name: "portfolioTitle", title: "Portfolio Title", type: "string" }),
         defineField({
           name: "filterLabels",
@@ -276,22 +250,6 @@ export const siteContentSchema = defineType({
           type: "array",
           of: [defineArrayMember({ type: "string" })],
         }),
-        defineField({
-          name: "statusGuideCards",
-          title: "Status Guide Cards",
-          type: "array",
-          of: [
-            defineArrayMember({
-              type: "object",
-              fields: [
-                defineField({ name: "tag", title: "Tag", type: "string" }),
-                defineField({ name: "title", title: "Title", type: "string" }),
-                defineField({ name: "description", title: "Description", type: "string" }),
-              ],
-            }),
-          ],
-        }),
-        defineField({ name: "disclosure", title: "Portfolio Disclosure", type: "string" }),
         defineField({
           name: "spotlight",
           title: "Featured Project Spotlight",
@@ -314,6 +272,120 @@ export const siteContentSchema = defineType({
               fields: [
                 defineField({ name: "alt", title: "Alt Text", type: "string" }),
               ],
+            }),
+          ],
+        }),
+        defineField({
+          name: "spotlightTwo",
+          title: "Spotlight Panel 2",
+          type: "object",
+          fields: [
+            defineField({ name: "title", title: "Title", type: "string" }),
+            defineField({ name: "type", title: "Type", type: "string" }),
+            defineField({ name: "description", title: "Description", type: "text", rows: 2 }),
+            defineField({
+              name: "points",
+              title: "Points",
+              type: "array",
+              of: [defineArrayMember({ type: "string" })],
+            }),
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+              fields: [
+                defineField({ name: "alt", title: "Alt Text", type: "string" }),
+              ],
+            }),
+          ],
+        }),
+        defineField({
+          name: "spotlightThree",
+          title: "Spotlight Panel 3",
+          type: "object",
+          fields: [
+            defineField({ name: "title", title: "Title", type: "string" }),
+            defineField({ name: "type", title: "Type", type: "string" }),
+            defineField({ name: "description", title: "Description", type: "text", rows: 2 }),
+            defineField({
+              name: "points",
+              title: "Points",
+              type: "array",
+              of: [defineArrayMember({ type: "string" })],
+            }),
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+              fields: [
+                defineField({ name: "alt", title: "Alt Text", type: "string" }),
+              ],
+            }),
+          ],
+        }),
+        defineField({
+          name: "spotlightFour",
+          title: "Spotlight Panel 4",
+          type: "object",
+          fields: [
+            defineField({ name: "title", title: "Title", type: "string" }),
+            defineField({ name: "type", title: "Type", type: "string" }),
+            defineField({ name: "description", title: "Description", type: "text", rows: 2 }),
+            defineField({
+              name: "points",
+              title: "Points",
+              type: "array",
+              of: [defineArrayMember({ type: "string" })],
+            }),
+            defineField({
+              name: "image",
+              title: "Image",
+              type: "image",
+              options: { hotspot: true },
+              fields: [
+                defineField({ name: "alt", title: "Alt Text", type: "string" }),
+              ],
+            }),
+          ],
+        }),
+        defineField({
+          name: "additionalSpotlights",
+          title: "Additional Spotlight Panels",
+          description: "Add up to 30 extra spotlight panels shown below the featured panel.",
+          type: "array",
+          validation: (Rule) => Rule.max(30),
+          of: [
+            defineArrayMember({
+              type: "object",
+              fields: [
+                defineField({ name: "title", title: "Title", type: "string" }),
+                defineField({ name: "type", title: "Type", type: "string" }),
+                defineField({ name: "description", title: "Description", type: "text", rows: 2 }),
+                defineField({
+                  name: "points",
+                  title: "Points",
+                  type: "array",
+                  of: [defineArrayMember({ type: "string" })],
+                }),
+                defineField({
+                  name: "image",
+                  title: "Image",
+                  type: "image",
+                  options: { hotspot: true },
+                  fields: [
+                    defineField({ name: "alt", title: "Alt Text", type: "string" }),
+                  ],
+                }),
+              ],
+              preview: {
+                select: {
+                  title: "title",
+                  subtitle: "type",
+                  media: "image",
+                },
+              },
             }),
           ],
         }),

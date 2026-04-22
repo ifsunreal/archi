@@ -220,7 +220,15 @@
   box-shadow: var(--shadow-soft);
 }
 
-.project-spotlight.is-image-right img {
+.project-spotlight-media {
+  position: relative;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.project-spotlight.is-image-right .project-spotlight-media {
   order: 2;
 }
 
@@ -259,16 +267,19 @@
   background: rgba(13, 22, 17, 0.95);
 }
 
-.project-spotlight img {
+.project-spotlight-media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 50%;
   opacity: 1;
+  min-width: 0;
   transform: translateX(0);
   transition: opacity 240ms ease, transform 240ms ease;
 }
 
 .project-spotlight-copy {
+  height: 100%;
   padding: 1.2rem;
   display: grid;
   align-content: center;
@@ -278,14 +289,15 @@
   opacity: 1;
   transform: translateX(0);
   transition: opacity 240ms ease, transform 240ms ease;
+  backdrop-filter: blur(10px);
 }
 
-.project-spotlight.is-swapping img,
+.project-spotlight.is-swapping .project-spotlight-media,
 .project-spotlight.is-swapping .project-spotlight-copy {
   opacity: 0;
 }
 
-.project-spotlight.is-swapping.is-image-right img {
+.project-spotlight.is-swapping.is-image-right .project-spotlight-media {
   transform: translateX(18px);
 }
 
@@ -293,7 +305,7 @@
   transform: translateX(-18px);
 }
 
-.project-spotlight.is-swapping:not(.is-image-right) img {
+.project-spotlight.is-swapping:not(.is-image-right) .project-spotlight-media {
   transform: translateX(-18px);
 }
 
@@ -302,7 +314,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-spotlight img,
+  .project-spotlight-media,
   .project-spotlight-copy,
   .spotlight-swap-btn {
     transition: none;
@@ -311,6 +323,12 @@
 
 .project-spotlight-copy h3 {
   font-size: clamp(1.5rem, 2.8vw, 2.4rem);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .spotlight-type {
@@ -319,10 +337,18 @@
   letter-spacing: 0.1em;
   font-size: 0.76rem;
   font-weight: 700;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .spotlight-description {
   color: var(--muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .spotlight-points {
@@ -337,6 +363,8 @@
   padding: 0.35rem 0.65rem;
   font-size: 0.78rem;
   background: rgba(255, 255, 255, 0.05);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .project-status-guide {
@@ -520,7 +548,7 @@
 
 .carousel-slide img,
 .project-card img,
-.project-spotlight img {
+.project-spotlight-media {
   cursor: zoom-in;
 }
 
@@ -580,6 +608,10 @@
   .project-spotlight {
     grid-template-columns: 1fr;
     height: auto;
+  }
+
+  .project-spotlight-media {
+    min-height: 260px;
   }
 
   .carousel-shell {

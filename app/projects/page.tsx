@@ -16,30 +16,26 @@ type ProjectItem = {
   coverImageAlt: string | null;
 };
 
+type SpotlightPanel = {
+  title?: string;
+  type?: string;
+  description?: string;
+  points?: string[];
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+};
+
 type ProjectsContent = {
   _id?: string;
   projects?: {
-    showcaseEyebrow?: string;
-    showcaseTitle?: string;
-    showcaseNote?: string;
-    carouselSlides?: Array<{
-      tag?: string;
-      title?: string;
-      imageUrl?: string | null;
-      imageAlt?: string | null;
-    }>;
     portfolioTitle?: string;
     filterLabels?: string[];
-    statusGuideCards?: Array<{ tag?: string; title?: string; description?: string }>;
-    disclosure?: string;
     spotlight?: {
-      title?: string;
-      type?: string;
-      description?: string;
-      points?: string[];
-      imageUrl?: string | null;
-      imageAlt?: string | null;
-    };
+    } & SpotlightPanel;
+    spotlightTwo?: SpotlightPanel;
+    spotlightThree?: SpotlightPanel;
+    spotlightFour?: SpotlightPanel;
+    additionalSpotlights?: SpotlightPanel[];
   };
 };
 
@@ -50,20 +46,41 @@ const projectsContentQuery = groq`
   ) {
     _id,
     projects {
-      showcaseEyebrow,
-      showcaseTitle,
-      showcaseNote,
-      carouselSlides[] {
-        tag,
+      portfolioTitle,
+      filterLabels,
+      spotlight {
         title,
+        type,
+        description,
+        points,
         "imageUrl": image.asset->url,
         "imageAlt": image.alt
       },
-      portfolioTitle,
-      filterLabels,
-      statusGuideCards[] { tag, title, description },
-      disclosure,
-      spotlight {
+      spotlightTwo {
+        title,
+        type,
+        description,
+        points,
+        "imageUrl": image.asset->url,
+        "imageAlt": image.alt
+      },
+      spotlightThree {
+        title,
+        type,
+        description,
+        points,
+        "imageUrl": image.asset->url,
+        "imageAlt": image.alt
+      },
+      spotlightFour {
+        title,
+        type,
+        description,
+        points,
+        "imageUrl": image.asset->url,
+        "imageAlt": image.alt
+      },
+      additionalSpotlights[] {
         title,
         type,
         description,
@@ -76,27 +93,8 @@ const projectsContentQuery = groq`
 `;
 
 const defaultProjectsContent = {
-  showcaseEyebrow: "Design Showcase",
-  showcaseTitle: "Architectural concepts and space studies",
-  showcaseNote: "A curated carousel space for showcasing architectural design directions.",
   portfolioTitle: "Residential and Commercial Portfolio",
   filterLabels: ["All Projects", "Residential", "Commercial"],
-  statusGuideCards: [
-    {
-      tag: "Concept and Rendered Works",
-      title: "Design proposals and visualization studies",
-      description:
-        "Includes design proposals, planning studies, and rendered presentations developed to evaluate program, spatial direction, and architectural expression prior to construction.",
-    },
-    {
-      tag: "Completed and Built Works",
-      title: "Projects realized through construction",
-      description:
-        "Includes projects that proceeded to site implementation and were completed, representing executed architectural scope.",
-    },
-  ],
-  disclosure:
-    "Portfolio note: selected visuals may represent conceptual design studies and rendered direction work, while others document completed built projects.",
   spotlight: {
     title: "Mckinley West Residence",
     type: "Residential",
@@ -105,11 +103,55 @@ const defaultProjectsContent = {
     imageUrl: "/assets/images/mckinley-west-residence.jpg",
     imageAlt: "Featured project image",
   },
-  carouselSlides: [
-    { tag: "Concept 01", title: "Luxury residential frontage", imageUrl: "/assets/images/projects-carousel-01.jpg", imageAlt: "Modern architectural exterior" },
-    { tag: "Concept 02", title: "Refined interior spatial flow", imageUrl: "/assets/images/projects-carousel-02.jpg", imageAlt: "Elegant interior architecture" },
-    { tag: "Concept 03", title: "Commercial form with presence", imageUrl: "/assets/images/projects-carousel-03.jpg", imageAlt: "Commercial architectural building" },
-    { tag: "Concept 04", title: "Warm material-led living spaces", imageUrl: "/assets/images/projects-carousel-04.jpg", imageAlt: "Warm architectural living space" },
+  spotlightTwo: {
+    title: "Featured Architecture",
+    type: "Residential",
+    description: "Architectural project showcasing design excellence and innovative spatial solutions.",
+    points: ["Design innovation", "Spatial efficiency", "Material quality"],
+    imageUrl: null,
+    imageAlt: "Project image",
+  },
+  spotlightThree: {
+    title: "Contemporary Design",
+    type: "Commercial",
+    description: "A carefully crafted architectural response to contemporary design challenges and client aspirations.",
+    points: ["Contemporary design", "Client focused", "Sustainable approach"],
+    imageUrl: null,
+    imageAlt: "Project image",
+  },
+  spotlightFour: {
+    title: "Architectural Excellence",
+    type: "Residential",
+    description: "An exploration of form, function, and the seamless integration of architecture within its context.",
+    points: ["Contextual design", "Functional beauty", "Environmental harmony"],
+    imageUrl: null,
+    imageAlt: "Project image",
+  },
+  additionalSpotlights: [
+    {
+      title: "Featured Architecture",
+      type: "Residential",
+      description: "Architectural project showcasing design excellence and innovative spatial solutions.",
+      points: ["Design innovation", "Spatial efficiency", "Material quality"],
+      imageUrl: null,
+      imageAlt: "Project image",
+    },
+    {
+      title: "Contemporary Design",
+      type: "Commercial",
+      description: "A carefully crafted architectural response to contemporary design challenges and client aspirations.",
+      points: ["Contemporary design", "Client focused", "Sustainable approach"],
+      imageUrl: null,
+      imageAlt: "Project image",
+    },
+    {
+      title: "Architectural Excellence",
+      type: "Residential",
+      description: "An exploration of form, function, and the seamless integration of architecture within its context.",
+      points: ["Contextual design", "Functional beauty", "Environmental harmony"],
+      imageUrl: null,
+      imageAlt: "Project image",
+    },
   ],
 };
 
@@ -142,65 +184,33 @@ export default async function ProjectsPage() {
       client.fetch<ProjectItem[]>(projectsQuery),
     ])
     : [null, [] as ProjectItem[]];
-  const content = { ...defaultProjectsContent, ...(projectsContent?.projects ?? {}) };
-  const slides = content.carouselSlides?.length ? content.carouselSlides : defaultProjectsContent.carouselSlides;
-  const statusGuideCards = content.statusGuideCards?.length ? content.statusGuideCards : defaultProjectsContent.statusGuideCards;
+  const content = projectsContent?.projects ?? {};
   const spotlight = content.spotlight || defaultProjectsContent.spotlight;
   const filterLabels = content.filterLabels?.length ? content.filterLabels : defaultProjectsContent.filterLabels;
+  const additionalPanels = [
+    content.spotlightTwo,
+    content.spotlightThree,
+    content.spotlightFour,
+    ...(content.additionalSpotlights ?? []),
+  ].filter((panel): panel is SpotlightPanel => Boolean(
+    panel && (
+      panel.title ||
+      panel.type ||
+      panel.description ||
+      panel.imageUrl ||
+      panel.imageAlt ||
+      (panel.points && panel.points.length)
+    )
+  ));
   return (
     <>
       <SiteHeader />
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>
-        <section className="section container reveal" id="showcase">
-          <div className="section-head projects-head">
-            <div>
-              <p className="eyebrow">{content.showcaseEyebrow}</p>
-              <h2>{content.showcaseTitle}</h2>
-            </div>
-            <p className="section-note">{content.showcaseNote}</p>
-          </div>
-          <div className="carousel-shell" aria-label="Architectural showcase carousel">
-            <div className="carousel-thumbs-wrap">
-              <div className="carousel-thumbs" id="carouselThumbs" aria-label="Showcase thumbnails">
-                {slides.map((slide, index) => (
-                  <button className={`carousel-thumb ${index === 0 ? "active" : ""}`} type="button" data-index={index} aria-label={`Go to showcase slide ${index + 1}`} key={`${slide.title}-${index}`}>
-                    <img src={slide.imageUrl || "/assets/images/lgv.avif"} alt={slide.imageAlt || slide.title || "Showcase slide"} />
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <strong>{slide.tag || slide.title}</strong>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="carousel-panel">
-              <div className="carousel" aria-label="Architectural showcase carousel">
-                <button className="carousel-btn" id="carouselPrev" type="button" aria-label="Previous showcase slide">&#8249;</button>
-                <div className="carousel-viewport">
-                  <div className="carousel-track" id="carouselTrack">
-                    {slides.map((slide, index) => (
-                      <article className="carousel-slide" key={`${slide.title}-${index}`}>
-                        <button className="carousel-zoom-btn" type="button" aria-label="View image fullscreen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
-                        <img src={slide.imageUrl || "/assets/images/lgv.avif"} alt={slide.imageAlt || slide.title || "Showcase slide"} />
-                        <div className="carousel-caption">
-                          <p className="tag">{slide.tag || `Concept ${index + 1}`}</p>
-                          <h3>{slide.title}</h3>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-                <button className="carousel-btn" id="carouselNext" type="button" aria-label="Next showcase slide">&#8250;</button>
-              </div>
-              <div id="carouselDots" className="carousel-dots" aria-label="Showcase carousel pages" />
-            </div>
-          </div>
-        </section>
-
         <section className="section container reveal" id="projects">
           <div className="section-head">
-            <h2>{content.portfolioTitle}</h2>
+            <h2>{content.portfolioTitle || defaultProjectsContent.portfolioTitle}</h2>
             <div className="project-filter-tabs">
               <button className="filter-tab active" data-filter="all" aria-pressed="true">{filterLabels[0]}</button>
               <button className="filter-tab" data-filter="residential" aria-pressed="false">{filterLabels[1]}</button>
@@ -208,21 +218,17 @@ export default async function ProjectsPage() {
             </div>
           </div>
 
-          <div className="project-status-guide" aria-label="Project category explanation">
-            {statusGuideCards.map((card) => (
-              <article className="status-guide-card" key={card.title}>
-                <p className="tag">{card.tag}</p>
-                <h3>{card.title}</h3>
-                <p>{card.description}</p>
-              </article>
-            ))}
-          </div>
-          <p className="section-note project-disclosure">
-            {content.disclosure}
-          </p>
-
           <article className="project-spotlight" aria-live="polite">
-            <Image id="spotlightImage" src={spotlight.imageUrl || projects[0]?.coverImageUrl || "/assets/images/mckinley-west-residence.jpg"} alt={spotlight.imageAlt || "Featured project image"} width={1200} height={800} />
+            <div className="project-spotlight-media" style={{ position: "relative", height: "100%" }}>
+              <Image
+                id="spotlightImage"
+                src={spotlight.imageUrl || projects[0]?.coverImageUrl || "/assets/images/mckinley-west-residence.jpg"}
+                alt={spotlight.imageAlt || "Featured project image"}
+                fill
+                sizes="(max-width: 940px) 100vw, 55vw"
+                style={{ objectFit: "cover", objectPosition: "50% 50%" }}
+              />
+            </div>
             <div className="project-spotlight-copy">
               <p className="tag">Featured Project</p>
               <h3 id="spotlightTitle">{spotlight.title || projects[0]?.title || "Mckinley West Residence"}</h3>
@@ -233,6 +239,33 @@ export default async function ProjectsPage() {
               </div>
             </div>
           </article>
+
+          {additionalPanels.map((panel, index) => {
+            const fallbackProject = projects[index] || projects[0];
+            const isImageRight = index % 2 === 0;
+            return (
+              <article className={`project-spotlight${isImageRight ? " is-image-right" : ""}`} aria-live="polite" key={`${panel.title || "panel"}-${index}`}>
+                <div className="project-spotlight-media" style={{ position: "relative", height: "100%" }}>
+                  <Image
+                    src={panel.imageUrl || fallbackProject?.coverImageUrl || "/assets/images/mckinley-west-residence.jpg"}
+                    alt={panel.imageAlt || fallbackProject?.coverImageAlt || "Project image"}
+                    fill
+                    sizes="(max-width: 940px) 100vw, 55vw"
+                    style={{ objectFit: "cover", objectPosition: "50% 50%" }}
+                  />
+                </div>
+                <div className="project-spotlight-copy">
+                  <p className="tag">{panel.type || fallbackProject?.category || "Residential"}</p>
+                  <h3>{panel.title || fallbackProject?.title || "Featured Architecture"}</h3>
+                  <p className="spotlight-type">{panel.type || fallbackProject?.category || "Residential"}</p>
+                  <p className="spotlight-description">{panel.description || "Project details available on request."}</p>
+                  <div className="spotlight-points">
+                    {(panel.points || []).map((point) => <span key={`${point}-${index}`}>{point}</span>)}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
 
           <div className="project-grid">
             {projects.map((project) => (
