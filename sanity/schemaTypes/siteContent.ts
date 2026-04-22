@@ -59,7 +59,19 @@ export const siteContentSchema = defineType({
               type: "object",
               fields: [
                 defineField({ name: "label", title: "Label", type: "string" }),
-                defineField({ name: "href", title: "Link", type: "string" }),
+                defineField({
+                  name: "href",
+                  title: "Link",
+                  type: "string",
+                  description: "URL destination for button (e.g., /projects, https://example.com, #section)",
+                  validation: (Rule) =>
+                    Rule.required().custom((value) => {
+                      if (!value) return true;
+                      const isValidUrl =
+                        /^(https?:\/\/|\/|#)[^\s]*$/.test(value);
+                      return isValidUrl || "Enter a valid URL (starting with http://, https://, /, or #)";
+                    }),
+                }),
                 defineField({
                   name: "variant",
                   title: "Variant",
@@ -258,7 +270,19 @@ export const siteContentSchema = defineType({
             defineField({ name: "title", title: "Title", type: "string" }),
             defineField({ name: "type", title: "Type", type: "string" }),
             defineField({ name: "description", title: "Description", type: "text", rows: 4 }),
-            defineField({ name: "moreDetailsUrl", title: "More Details URL", type: "string" }),
+            defineField({
+              name: "moreDetailsUrl",
+              title: "More Details URL",
+              type: "string",
+              description: "Full URL to project details page (e.g., https://example.com/project, or /projects/slug for internal links)",
+              validation: (Rule) =>
+                Rule.required().custom((value) => {
+                  if (!value) return true;
+                  const isValidUrl =
+                    /^(https?:\/\/|\/)[^\s]+$/.test(value);
+                  return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+                }),
+            }),
             defineField({
               name: "points",
               title: "Points",
@@ -284,7 +308,19 @@ export const siteContentSchema = defineType({
             defineField({ name: "title", title: "Title", type: "string" }),
             defineField({ name: "type", title: "Type", type: "string" }),
             defineField({ name: "description", title: "Description", type: "text", rows: 4 }),
-            defineField({ name: "moreDetailsUrl", title: "More Details URL", type: "string" }),
+            defineField({
+              name: "moreDetailsUrl",
+              title: "More Details URL",
+              type: "string",
+              description: "Full URL to project details page (e.g., https://example.com/project, or /projects/slug for internal links)",
+              validation: (Rule) =>
+                Rule.custom((value) => {
+                  if (!value) return true;
+                  const isValidUrl =
+                    /^(https?:\/\/|\/)[^\s]+$/.test(value);
+                  return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+                }),
+            }),
             defineField({
               name: "points",
               title: "Points",
@@ -310,7 +346,19 @@ export const siteContentSchema = defineType({
             defineField({ name: "title", title: "Title", type: "string" }),
             defineField({ name: "type", title: "Type", type: "string" }),
             defineField({ name: "description", title: "Description", type: "text", rows: 4 }),
-            defineField({ name: "moreDetailsUrl", title: "More Details URL", type: "string" }),
+            defineField({
+              name: "moreDetailsUrl",
+              title: "More Details URL",
+              type: "string",
+              description: "Full URL to project details page (e.g., https://example.com/project, or /projects/slug for internal links)",
+              validation: (Rule) =>
+                Rule.custom((value) => {
+                  if (!value) return true;
+                  const isValidUrl =
+                    /^(https?:\/\/|\/)[^\s]+$/.test(value);
+                  return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+                }),
+            }),
             defineField({
               name: "points",
               title: "Points",
@@ -336,7 +384,19 @@ export const siteContentSchema = defineType({
             defineField({ name: "title", title: "Title", type: "string" }),
             defineField({ name: "type", title: "Type", type: "string" }),
             defineField({ name: "description", title: "Description", type: "text", rows: 4 }),
-            defineField({ name: "moreDetailsUrl", title: "More Details URL", type: "string" }),
+            defineField({
+              name: "moreDetailsUrl",
+              title: "More Details URL",
+              type: "string",
+              description: "Full URL to project details page (e.g., https://example.com/project, or /projects/slug for internal links)",
+              validation: (Rule) =>
+                Rule.custom((value) => {
+                  if (!value) return true;
+                  const isValidUrl =
+                    /^(https?:\/\/|\/)[^\s]+$/.test(value);
+                  return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+                }),
+            }),
             defineField({
               name: "points",
               title: "Points",
@@ -367,7 +427,19 @@ export const siteContentSchema = defineType({
                 defineField({ name: "title", title: "Title", type: "string" }),
                 defineField({ name: "type", title: "Type", type: "string" }),
                 defineField({ name: "description", title: "Description", type: "text", rows: 4 }),
-                defineField({ name: "moreDetailsUrl", title: "More Details URL", type: "string" }),
+                defineField({
+                  name: "moreDetailsUrl",
+                  title: "More Details URL",
+                  type: "string",
+                  description: "Full URL to project details page (e.g., https://example.com/project, or /projects/slug for internal links)",
+                  validation: (Rule) =>
+                    Rule.custom((value) => {
+                      if (!value) return true;
+                      const isValidUrl =
+                        /^(https?:\/\/|\/)[^\s]+$/.test(value);
+                      return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+                    }),
+                }),
                 defineField({
                   name: "points",
                   title: "Points",
@@ -406,8 +478,32 @@ export const siteContentSchema = defineType({
         defineField({ name: "formTitle", title: "Form Title", type: "string" }),
         defineField({ name: "formIntro", title: "Form Intro", type: "string" }),
         defineField({ name: "officeHeading", title: "Office Heading", type: "string" }),
-        defineField({ name: "officeMapUrl", title: "Office Map URL", type: "string" }),
-        defineField({ name: "officeMapLinkUrl", title: "Office Map Link URL", type: "string" }),
+        defineField({
+          name: "officeMapUrl",
+          title: "Office Map URL",
+          type: "string",
+          description: "Embed URL for the office location map (e.g., Google Maps embed URL)",
+          validation: (Rule) =>
+            Rule.custom((value) => {
+              if (!value) return true;
+              const isValidUrl =
+                /^(https?:\/\/|\/)[^\s]+$/.test(value);
+              return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+            }),
+        }),
+        defineField({
+          name: "officeMapLinkUrl",
+          title: "Office Map Link URL",
+          type: "string",
+          description: "Full URL to office location on Google Maps or similar service",
+          validation: (Rule) =>
+            Rule.custom((value) => {
+              if (!value) return true;
+              const isValidUrl =
+                /^(https?:\/\/|\/)[^\s]+$/.test(value);
+              return isValidUrl || "Enter a valid URL (starting with http://, https://, or /)";
+            }),
+        }),
         defineField({ name: "officeMapLink", title: "Office Map Link Text", type: "string" }),
         defineField({ name: "contactHeading", title: "Contact Heading", type: "string" }),
         defineField({ name: "contactName", title: "Contact Name", type: "string" }),

@@ -105,7 +105,7 @@ const defaultProjectsContent = {
     title: "Mckinley West Residence",
     type: "Residential",
     description: "A climate-responsive residence balancing privacy, airflow, and long-term maintenance efficiency.",
-    moreDetailsUrl: "https://aventihomes.wordpress.com/",
+    moreDetailsUrl: null,
     points: ["Climate-sensitive planning", "Cost-aware design decisions", "Resilient material strategy"],
     imageUrl: "/assets/images/mckinley-west-residence.jpg",
     imageAlt: "Featured project image",
@@ -114,7 +114,7 @@ const defaultProjectsContent = {
     title: "Featured Architecture",
     type: "Residential",
     description: "Architectural project showcasing design excellence and innovative spatial solutions.",
-    moreDetailsUrl: "https://aventihomes.wordpress.com/",
+    moreDetailsUrl: null,
     points: ["Design innovation", "Spatial efficiency", "Material quality"],
     imageUrl: null,
     imageAlt: "Project image",
@@ -123,7 +123,7 @@ const defaultProjectsContent = {
     title: "Contemporary Design",
     type: "Commercial",
     description: "A carefully crafted architectural response to contemporary design challenges and client aspirations.",
-    moreDetailsUrl: "https://aventihomes.wordpress.com/",
+    moreDetailsUrl: null,
     points: ["Contemporary design", "Client focused", "Sustainable approach"],
     imageUrl: null,
     imageAlt: "Project image",
@@ -132,7 +132,7 @@ const defaultProjectsContent = {
     title: "Architectural Excellence",
     type: "Residential",
     description: "An exploration of form, function, and the seamless integration of architecture within its context.",
-    moreDetailsUrl: "https://aventihomes.wordpress.com/",
+    moreDetailsUrl: null,
     points: ["Contextual design", "Functional beauty", "Environmental harmony"],
     imageUrl: null,
     imageAlt: "Project image",
@@ -142,7 +142,7 @@ const defaultProjectsContent = {
       title: "Featured Architecture",
       type: "Residential",
       description: "Architectural project showcasing design excellence and innovative spatial solutions.",
-      moreDetailsUrl: "https://aventihomes.wordpress.com/",
+      moreDetailsUrl: null,
       points: ["Design innovation", "Spatial efficiency", "Material quality"],
       imageUrl: null,
       imageAlt: "Project image",
@@ -151,7 +151,7 @@ const defaultProjectsContent = {
       title: "Contemporary Design",
       type: "Commercial",
       description: "A carefully crafted architectural response to contemporary design challenges and client aspirations.",
-      moreDetailsUrl: "https://aventihomes.wordpress.com/",
+      moreDetailsUrl: null,
       points: ["Contemporary design", "Client focused", "Sustainable approach"],
       imageUrl: null,
       imageAlt: "Project image",
@@ -160,7 +160,7 @@ const defaultProjectsContent = {
       title: "Architectural Excellence",
       type: "Residential",
       description: "An exploration of form, function, and the seamless integration of architecture within its context.",
-      moreDetailsUrl: "https://aventihomes.wordpress.com/",
+      moreDetailsUrl: null,
       points: ["Contextual design", "Functional beauty", "Environmental harmony"],
       imageUrl: null,
       imageAlt: "Project image",
@@ -259,14 +259,16 @@ export default async function ProjectsPage() {
               <div className="spotlight-points">
                 {(spotlight.points || []).map((point) => <span key={point}>{point}</span>)}
               </div>
-              <a
-                className="spotlight-more-link"
-                href={spotlight.moreDetailsUrl || "https://aventihomes.wordpress.com/"}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                More Details
-              </a>
+              {spotlight.moreDetailsUrl && (
+                <a
+                  className="spotlight-more-link"
+                  href={spotlight.moreDetailsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  More Details
+                </a>
+              )}
             </div>
           </article>
 
@@ -291,14 +293,16 @@ export default async function ProjectsPage() {
                   <div className="spotlight-points">
                     {(panel.points || []).map((point) => <span key={`${point}-${index}`}>{point}</span>)}
                   </div>
-                  <a
-                    className="spotlight-more-link"
-                    href={panel.moreDetailsUrl || "https://aventihomes.wordpress.com/"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    More Details
-                  </a>
+                  {panel.moreDetailsUrl && (
+                    <a
+                      className="spotlight-more-link"
+                      href={panel.moreDetailsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      More Details
+                    </a>
+                  )}
                 </div>
               </article>
             );
