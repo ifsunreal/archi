@@ -1201,7 +1201,13 @@ function initializePhilippineAddressFields() {
 
   function refreshBarangaySuggestions() {
     if (addressState.selectedBarangayParent) {
-      void loadBarangaysForParent(addressState.selectedBarangayParent);
+      void loadBarangaysForParent(addressState.selectedBarangayParent).catch(() => {
+        const parentName = addressState.selectedBarangayParent?.displayName || "the selected municipality/city";
+        setAddressHint(`Barangay suggestions for ${parentName} could not be loaded. You can enter it manually.`);
+        barangayInput.disabled = false;
+        barangayInput.required = false;
+        barangayInput.setCustomValidity("");
+      });
     }
   }
 
