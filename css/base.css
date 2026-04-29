@@ -627,6 +627,13 @@ body.lightbox-active .site-header {
   gap: 0.55rem;
 }
 
+.footer-divider {
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 0.2rem;
+  font-size: 1rem;
+  line-height: 1;
+}
+
 .social-link {
   width: 36px;
   height: 36px;
@@ -642,6 +649,33 @@ body.lightbox-active .site-header {
   height: 16px;
   fill: currentColor;
   color: var(--text);
+}
+
+.footer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  padding: 3px 10px 3px 4px;
+}
+
+.footer-badge-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+
+.footer-badge-label {
+  color: #fff;
+  font-size: 11px;
+  font-family: Georgia, serif;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
 }
 
 .back-to-top {
