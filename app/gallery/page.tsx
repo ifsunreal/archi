@@ -122,6 +122,14 @@ export default function GalleryPage() {
             </div>
 
             <div className="gallery-main-panel">
+              <button
+                type="button"
+                onClick={goToPrevious}
+                aria-label="Previous image"
+                className="gallery-btn-prev"
+              >
+                &lt;
+              </button>
               <div className="gallery-main-media">
                 <Image
                   src={activeItem.src}
@@ -131,23 +139,15 @@ export default function GalleryPage() {
                   sizes="(max-width: 1024px) 100vw, 78vw"
                   className="gallery-main-image"
                 />
-                <p className="gallery-main-title-overlay">{activeItem.title}</p>
               </div>
-
-              <div className="gallery-main-meta">
-                <div>
-                  <h2>{activeItem.title}</h2>
-                  <p>{activeItem.meta}</p>
-                </div>
-                <div className="gallery-controls" aria-label="Gallery controls">
-                  <button type="button" onClick={goToPrevious} aria-label="Previous image">
-                    &lt;
-                  </button>
-                  <button type="button" onClick={goToNext} aria-label="Next image">
-                    &gt;
-                  </button>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={goToNext}
+                aria-label="Next image"
+                className="gallery-btn-next"
+              >
+                &gt;
+              </button>
             </div>
           </div>
         </section>
