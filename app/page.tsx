@@ -84,8 +84,6 @@ const projectsQuery = groq`
     }
 `;
 
-export const revalidate = 60;
-
 type PageProps = {
 };
 

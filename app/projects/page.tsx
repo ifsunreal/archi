@@ -315,7 +315,7 @@ export default async function ProjectsPage() {
                 data-type={project.category.toLowerCase()}
                 data-stage={project.status === "Completed" || project.status === "Sold" ? "accomplished" : "rendered"}
                 key={project._id}
-                href={project.slug ? `/projects/${project.slug}` : "/projects"}
+                href={project.slug ? `/projects/detail?slug=${encodeURIComponent(project.slug)}` : "/projects"}
                 aria-label={`Open ${project.title}`}
               >
                 {project.coverImageUrl ? (
