@@ -1,205 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import { groq } from "next-sanity";
-import { client } from "../../sanity/lib/client";
+import { getSiteContent } from "../../lib/content";
+import { defaultSiteContent } from "../../lib/content-defaults";
 import { SiteFooter } from "../../components/site-footer";
 import { SiteHeader } from "../../components/site-header";
+import type { ProjectItem, SpotlightPanel } from "../../lib/content-types";
 
-type ProjectItem = {
-  _id: string;
-  title: string;
-  category: string;
-  status: string | null;
-  year: number | null;
-  slug: string;
-  coverImageUrl: string | null;
-  coverImageAlt: string | null;
-};
+export const dynamic = "force-dynamic";
 
-type SpotlightPanel = {
-  title?: string;
-  type?: string;
-  description?: string;
-  moreDetailsUrl?: string;
-  points?: string[];
-  imageUrl?: string | null;
-  imageAlt?: string | null;
-};
-
-type ProjectsContent = {
-  _id?: string;
-  projects?: {
-    portfolioTitle?: string;
-    filterLabels?: string[];
-    spotlight?: {
-    } & SpotlightPanel;
-    spotlightTwo?: SpotlightPanel;
-    spotlightThree?: SpotlightPanel;
-    spotlightFour?: SpotlightPanel;
-    additionalSpotlights?: SpotlightPanel[];
-  };
-};
-
-const projectsContentQuery = groq`
-  coalesce(
-    *[_type == "siteContent" && _id == "siteContent"][0],
-    *[_type == "siteContent"] | order(_updatedAt desc)[0]
-  ) {
-    _id,
-    projects {
-      portfolioTitle,
-      filterLabels,
-      spotlight {
-        title,
-        type,
-        description,
-        moreDetailsUrl,
-        points,
-        "imageUrl": image.asset->url,
-        "imageAlt": image.alt
-      },
-      spotlightTwo {
-        title,
-        type,
-        description,
-        moreDetailsUrl,
-        points,
-        "imageUrl": image.asset->url,
-        "imageAlt": image.alt
-      },
-      spotlightThree {
-        title,
-        type,
-        description,
-        moreDetailsUrl,
-        points,
-        "imageUrl": image.asset->url,
-        "imageAlt": image.alt
-      },
-      spotlightFour {
-        title,
-        type,
-        description,
-        moreDetailsUrl,
-        points,
-        "imageUrl": image.asset->url,
-        "imageAlt": image.alt
-      },
-      additionalSpotlights[] {
-        title,
-        type,
-        description,
-        moreDetailsUrl,
-        points,
-        "imageUrl": image.asset->url,
-        "imageAlt": image.alt
-      }
-    }
-  }
-`;
-
-const defaultProjectsContent = {
-  portfolioTitle: "Residential and Commercial Portfolio",
-  filterLabels: ["All Projects", "Residential", "Commercial"],
-  spotlight: {
-    title: "Mckinley West Residence",
-    type: "Residential",
-    description: "A climate-responsive residence balancing privacy, airflow, and long-term maintenance efficiency.",
-    moreDetailsUrl: null,
-    points: ["Climate-sensitive planning", "Cost-aware design decisions", "Resilient material strategy"],
-    imageUrl: "/assets/images/mckinley-west-residence.jpg",
-    imageAlt: "Featured project image",
-  },
-  spotlightTwo: {
-    title: "Featured Architecture",
-    type: "Residential",
-    description: "Architectural project showcasing design excellence and innovative spatial solutions.",
-    moreDetailsUrl: null,
-    points: ["Design innovation", "Spatial efficiency", "Material quality"],
-    imageUrl: null,
-    imageAlt: "Project image",
-  },
-  spotlightThree: {
-    title: "Contemporary Design",
-    type: "Commercial",
-    description: "A carefully crafted architectural response to contemporary design challenges and client aspirations.",
-    moreDetailsUrl: null,
-    points: ["Contemporary design", "Client focused", "Sustainable approach"],
-    imageUrl: null,
-    imageAlt: "Project image",
-  },
-  spotlightFour: {
-    title: "Architectural Excellence",
-    type: "Residential",
-    description: "An exploration of form, function, and the seamless integration of architecture within its context.",
-    moreDetailsUrl: null,
-    points: ["Contextual design", "Functional beauty", "Environmental harmony"],
-    imageUrl: null,
-    imageAlt: "Project image",
-  },
-  additionalSpotlights: [
-    {
-      title: "Featured Architecture",
-      type: "Residential",
-      description: "Architectural project showcasing design excellence and innovative spatial solutions.",
-      moreDetailsUrl: null,
-      points: ["Design innovation", "Spatial efficiency", "Material quality"],
-      imageUrl: null,
-      imageAlt: "Project image",
-    },
-    {
-      title: "Contemporary Design",
-      type: "Commercial",
-      description: "A carefully crafted architectural response to contemporary design challenges and client aspirations.",
-      moreDetailsUrl: null,
-      points: ["Contemporary design", "Client focused", "Sustainable approach"],
-      imageUrl: null,
-      imageAlt: "Project image",
-    },
-    {
-      title: "Architectural Excellence",
-      type: "Residential",
-      description: "An exploration of form, function, and the seamless integration of architecture within its context.",
-      moreDetailsUrl: null,
-      points: ["Contextual design", "Functional beauty", "Environmental harmony"],
-      imageUrl: null,
-      imageAlt: "Project image",
-    },
-  ],
-};
-
-const projectsQuery = groq`
-  *[_type == "project" && !(_id in path("drafts.**"))]
-    | order(year desc, _createdAt desc) {
-      _id,
-      title,
-      category,
-      status,
-      year,
-      "slug": slug.current,
-      "coverImageUrl": coverImage.asset->url,
-      "coverImageAlt": coverImage.alt
-    }
-`;
-
-function getStatusLabel(status: string | null) {
+function getStatusLabel(status: string | null | undefined) {
   if (!status) return "Published";
   return status;
 }
 
-type PageProps = {
-};
-
 export default async function ProjectsPage() {
-  const [projectsContent, projects] = client
-    ? await Promise.all([
-      client.fetch<ProjectsContent | null>(projectsContentQuery),
-      client.fetch<ProjectItem[]>(projectsQuery),
-    ])
-    : [null, [] as ProjectItem[]];
-  const content = projectsContent?.projects ?? {};
+  const siteContent = await getSiteContent();
+  const content = siteContent.projectsPage;
+  const projects: ProjectItem[] = siteContent.projectItems || [];
+  const defaultProjectsContent = defaultSiteContent.projectsPage;
+
   const spotlight = content.spotlight || defaultProjectsContent.spotlight;
-  const filterLabels = content.filterLabels?.length ? content.filterLabels : defaultProjectsContent.filterLabels;
+  const filterLabels = content.filterLabels?.length ? content.filterLabels : defaultProjectsContent.filterLabels || [];
   const additionalPanels = [
     content.spotlightTwo,
     content.spotlightThree,
@@ -217,7 +38,7 @@ export default async function ProjectsPage() {
   ));
   return (
     <>
-      <SiteHeader />
+      <SiteHeader brand={siteContent.global.brand} navItems={siteContent.global.navItems} />
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>
@@ -245,21 +66,21 @@ export default async function ProjectsPage() {
             <div className="project-spotlight-media" style={{ position: "relative", height: "100%" }}>
               <Image
                 id="spotlightImage"
-                src={spotlight.imageUrl || projects[0]?.coverImageUrl || "/assets/images/mckinley-west-residence.jpg"}
-                alt={spotlight.imageAlt || "Featured project image"}
+                src={spotlight?.imageUrl || projects[0]?.coverImageUrl || "/assets/images/mckinley-west-residence.jpg"}
+                alt={spotlight?.imageAlt || "Featured project image"}
                 fill
                 sizes="(max-width: 940px) 100vw, 55vw"
                 style={{ objectFit: "cover", objectPosition: "50% 50%" }}
               />
             </div>
             <div className="project-spotlight-copy">
-              <h3 id="spotlightTitle">{spotlight.title || projects[0]?.title || "Mckinley West Residence"}</h3>
-              <p id="spotlightType" className="spotlight-type">{spotlight.type || projects[0]?.category || "Residential"}</p>
-              <p id="spotlightDescription" className="spotlight-description">{spotlight.description}</p>
+              <h3 id="spotlightTitle">{spotlight?.title || projects[0]?.title || "Mckinley West Residence"}</h3>
+              <p id="spotlightType" className="spotlight-type">{spotlight?.type || projects[0]?.category || "Residential"}</p>
+              <p id="spotlightDescription" className="spotlight-description">{spotlight?.description}</p>
               <div className="spotlight-points">
-                {(spotlight.points || []).map((point) => <span key={point}>{point}</span>)}
+                {(spotlight?.points || []).map((point) => <span key={point}>{point}</span>)}
               </div>
-              {spotlight.moreDetailsUrl && (
+              {spotlight?.moreDetailsUrl && (
                 <a
                   className="spotlight-more-link"
                   href={spotlight.moreDetailsUrl}
@@ -309,24 +130,24 @@ export default async function ProjectsPage() {
           })}
 
           <div className="project-grid">
-            {projects.map((project) => (
+            {projects.map((project, index) => (
               <Link
                 className="project-card"
-                data-type={project.category.toLowerCase()}
+                data-type={(project.category || "").toLowerCase()}
                 data-stage={project.status === "Completed" || project.status === "Sold" ? "accomplished" : "rendered"}
-                key={project._id}
+                key={project.slug || project.title || project.id || String(index)}
                 href={project.slug ? `/projects/detail?slug=${encodeURIComponent(project.slug)}` : "/projects"}
                 aria-label={`Open ${project.title}`}
               >
                 {project.coverImageUrl ? (
-                  <Image src={project.coverImageUrl} alt={project.coverImageAlt || project.title} width={960} height={640} />
+                  <Image src={project.coverImageUrl} alt={project.coverImageAlt || project.title || "Project image"} width={960} height={640} />
                 ) : (
                   <div style={{ width: "100%", aspectRatio: "16 / 10", background: "rgba(255,255,255,0.06)" }} />
                 )}
                 <div>
                   <p className="tag">{project.category}</p>
                   <p className={`status-pill ${project.status === "Completed" || project.status === "Sold" ? "status-pill-accomplished" : "status-pill-rendered"}`}>
-                    {getStatusLabel(project.status)}
+                    {getStatusLabel(project.status || null)}
                   </p>
                   <h3>{project.title}</h3>
                 </div>
@@ -346,7 +167,7 @@ export default async function ProjectsPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter footer={siteContent.global.footer} />
     </>
   );
 }

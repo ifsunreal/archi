@@ -1,81 +1,15 @@
-import { groq } from "next-sanity";
-import { client } from "../../sanity/lib/client";
+import { getSiteContent } from "../../lib/content";
 import { SiteFooter } from "../../components/site-footer";
 import { SiteHeader } from "../../components/site-header";
 
-type ContactContent = {
-  _id?: string;
-  contact?: {
-    title?: string;
-    formTitle?: string;
-    formIntro?: string;
-    officeHeading?: string;
-    officeMapUrl?: string;
-    officeMapLinkUrl?: string;
-    officeMapLink?: string;
-    contactHeading?: string;
-    contactName?: string;
-    contactRoles?: string;
-    addressLines?: string[];
-    phone?: string;
-    email?: string;
-  };
-};
-
-const contactQuery = groq`
-  coalesce(
-    *[_type == "siteContent" && _id == "siteContent"][0],
-    *[_type == "siteContent"] | order(_updatedAt desc)[0]
-  ) {
-    _id,
-    contact {
-      title,
-      formTitle,
-      formIntro,
-      officeHeading,
-      officeMapUrl,
-      officeMapLinkUrl,
-      officeMapLink,
-      contactHeading,
-      contactName,
-      contactRoles,
-      addressLines,
-      phone,
-      email
-    }
-  }
-`;
-
-const defaultContact = {
-  title: "Tell us what you are building",
-  formTitle: "Project Inquiry Form",
-  formIntro: "Please share your project details so we can prepare an informed architectural consultation.",
-  officeHeading: "Office Location",
-  officeMapUrl: "https://maps.google.com/maps?q=14.5475045,120.9977811&z=17&output=embed",
-  officeMapLinkUrl: "https://www.google.com/maps/place/Nemar+Building/@14.5474107,120.9952397,17z/data=!4m7!3m6!1s0x3397c937056bd4cd:0xa7142874a79de38!8m2!3d14.5475045!4d120.9977811!15sCkEyNjVBIC0gTmVtYXIgQnVpbGRpbmcsIExpYmVydGFkIFN0LiBQYXNheSBDaXR5LCAxMzAwLiBQaGlsaXBwaW5lc5IBEmFwYXJ0bWVudF9idWlsZGluZ-ABAA!16s/g/11tx3rvcrx",
-  officeMapLink: "Open full map",
-  contactHeading: "Get in touch",
-  contactName: "Arch. Joseph C. Chua",
-  contactRoles: "Architect ~ Realtor ~ Environmental Planner ~ Plumbing Engineer",
-  addressLines: ["265A - Nemar Building, Libertad St. Pasay City, 1300. Philippines."],
-  phone: "+63-917-819-4131",
-  email: "josephchua.2000@gmail.com",
-};
-
-type PageProps = {
-};
+export const dynamic = "force-dynamic";
 
 export default async function ContactPage() {
-  const content = client ? await client.fetch<ContactContent | null>(contactQuery) : null;
-  const contact = {
-    ...defaultContact,
-    ...(content?.contact ?? {}),
-    officeMapUrl: "https://maps.google.com/maps?q=14.5475045,120.9977811&z=17&output=embed",
-    officeMapLinkUrl: "https://www.google.com/maps/place/Nemar+Building/@14.5474107,120.9952397,17z/data=!4m7!3m6!1s0x3397c937056bd4cd:0xa7142874a79de38!8m2!3d14.5475045!4d120.9977811!15sCkEyNjVBIC0gTmVtYXIgQnVpbGRpbmcsIExpYmVydGFkIFN0LiBQYXNheSBDaXR5LCAxMzAwLiBQaGlsaXBwaW5lc5IBEmFwYXJ0bWVudF9idWlsZGluZ-ABAA!16s/g/11tx3rvcrx",
-  };
+  const siteContent = await getSiteContent();
+  const contact = siteContent.contact;
   return (
     <>
-      <SiteHeader />
+      <SiteHeader brand={siteContent.global.brand} navItems={siteContent.global.navItems} />
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>
@@ -226,7 +160,7 @@ export default async function ContactPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter footer={siteContent.global.footer} />
     </>
   );
 }

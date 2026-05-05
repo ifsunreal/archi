@@ -1,94 +1,25 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { groq } from "next-sanity";
-import { useEffect, useMemo, useState } from "react";
+import { getProjectBySlug, getSiteContent } from "../../../lib/content";
 import { SiteFooter } from "../../../components/site-footer";
 import { SiteHeader } from "../../../components/site-header";
-import { client } from "../../../sanity/lib/client";
 
-type ProjectDetail = {
-  _id: string;
-  title: string;
-  category: string;
-  status: string | null;
-  year: number | null;
-  location: string | null;
-  descriptionText: string | null;
-  coverImageUrl: string | null;
-  coverImageAlt: string | null;
-  gallery: Array<{
-    imageUrl: string | null;
-    imageAlt: string | null;
-  }>;
+export const dynamic = "force-dynamic";
+
+type PageProps = {
+  searchParams?: { slug?: string | string[] };
 };
 
-const projectDetailQuery = groq`
-  *[_type == "project" && slug.current == $slug && !(_id in path("drafts.**"))][0] {
-    _id,
-    title,
-    category,
-    status,
-    year,
-    location,
-    "descriptionText": pt::text(description),
-    "coverImageUrl": coverImage.asset->url,
-    "coverImageAlt": coverImage.alt,
-    gallery[] {
-      "imageUrl": asset->url,
-      "imageAlt": alt
-    }
-  }
-`;
-
-type LoadState = "idle" | "loading" | "ready" | "error";
-
-export default function ProjectDetailPage() {
-  const [slug, setSlug] = useState("");
-  const [project, setProject] = useState<ProjectDetail | null>(null);
-  const [state, setState] = useState<LoadState>("idle");
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setSlug(params.get("slug") || "");
-  }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (!slug) {
-      setProject(null);
-      setState("idle");
-      return () => {
-        isMounted = false;
-      };
-    }
-
-    setState("loading");
-    client
-      .fetch<ProjectDetail | null>(projectDetailQuery, { slug })
-      .then((result) => {
-        if (!isMounted) return;
-        setProject(result);
-        setState(result ? "ready" : "error");
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setProject(null);
-        setState("error");
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [slug]);
-
-  const gallery = useMemo(() => (project?.gallery || []).filter((item) => item.imageUrl), [project]);
+export default async function ProjectDetailPage({ searchParams }: PageProps) {
+  const siteContent = await getSiteContent();
+  const rawSlug = searchParams?.slug;
+  const slug = Array.isArray(rawSlug) ? rawSlug[0] : rawSlug || "";
+  const project = slug ? await getProjectBySlug(slug) : null;
+  const gallery = (project?.gallery || []).filter((item) => item.imageUrl);
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader brand={siteContent.global.brand} navItems={siteContent.global.navItems} />
       <div className="top-progress" id="topProgress" aria-hidden="true" />
 
       <main>
@@ -111,11 +42,7 @@ export default function ProjectDetailPage() {
             </p>
           ) : null}
 
-          {state === "loading" ? (
-            <p className="section-note">Loading project details...</p>
-          ) : null}
-
-          {state === "error" ? (
+          {!project && slug ? (
             <p className="section-note">
               Project details are not available. Please return to <Link href="/projects">Projects</Link>.
             </p>
@@ -126,7 +53,7 @@ export default function ProjectDetailPage() {
               <article className="project-spotlight">
                 <Image
                   src={project.coverImageUrl || "/assets/images/lgv.avif"}
-                  alt={project.coverImageAlt || project.title}
+                  alt={project.coverImageAlt || project.title || "Project cover"}
                   width={1400}
                   height={900}
                   priority
@@ -135,10 +62,10 @@ export default function ProjectDetailPage() {
                   <p className="tag">Overview</p>
                   <h3>{project.title}</h3>
                   <p className="spotlight-description">
-                    {project.descriptionText || "Project narrative is currently being prepared in Studio."}
+                    {project.descriptionText || "Project narrative is currently being prepared in the admin dashboard."}
                   </p>
                   <div className="spotlight-points">
-                    <span>{project.category}</span>
+                    {project.category ? <span>{project.category}</span> : null}
                     {project.location ? <span>{project.location}</span> : null}
                     {project.year ? <span>{project.year}</span> : null}
                   </div>
@@ -148,7 +75,7 @@ export default function ProjectDetailPage() {
               {gallery.length > 0 ? (
                 <div className="project-grid" style={{ marginTop: "1rem" }}>
                   {gallery.map((item, index) => (
-                    <article className="project-card" key={`${project._id}-gallery-${index}`}>
+                    <article className="project-card" key={`${project.slug || project.title}-gallery-${index}`}>
                       <Image
                         src={item.imageUrl || "/assets/images/lgv.avif"}
                         alt={item.imageAlt || `${project.title} gallery ${index + 1}`}
@@ -168,7 +95,7 @@ export default function ProjectDetailPage() {
         </section>
       </main>
 
-      <SiteFooter />
+      <SiteFooter footer={siteContent.global.footer} />
     </>
   );
 }

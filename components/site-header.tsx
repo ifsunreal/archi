@@ -3,8 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type MouseEvent } from "react";
+import type { Brand, NavItem } from "../lib/content-types";
 
-const navItems = [
+type SiteHeaderProps = {
+  brand?: Brand;
+  navItems?: NavItem[];
+};
+
+const defaultBrand: Brand = {
+  mark: "JC",
+  text: "JCCHUA & Associates",
+};
+
+const defaultNavItems: NavItem[] = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/projects", label: "Projects" },
@@ -12,9 +23,13 @@ const navItems = [
   { href: "/contact", label: "Contact" },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ brand, navItems }: SiteHeaderProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const resolvedBrand = brand ?? defaultBrand;
+  const items = navItems?.length ? navItems : defaultNavItems;
+  const hasLogin = items.some((item) => item.href === "/login");
+  const navLinks = hasLogin ? items : [...items, { href: "/login", label: "Login" }];
 
   function scrollToTopOnActiveHome(event: MouseEvent<HTMLAnchorElement>, href: string) {
     if (pathname === "/" && href === "/") {
@@ -29,15 +44,15 @@ export function SiteHeader() {
         <Link
           className="brand"
           href="/"
-          aria-label="JCCHUA and Associates home"
+          aria-label={`${resolvedBrand.text} home`}
           onClick={(event) => scrollToTopOnActiveHome(event, "/")}
         >
-          <span className="brand-mark">JC</span>
-          <span className="brand-text">JCCHUA & Associates</span>
+          <span className="brand-mark">{resolvedBrand.mark}</span>
+          <span className="brand-text">{resolvedBrand.text}</span>
         </Link>
 
         <nav className="site-nav" aria-label="Main navigation">
-          {navItems.map((item) => (
+          {navLinks.map((item) => (
             <Link
               key={item.href}
               className={pathname === item.href ? "active" : ""}
@@ -66,7 +81,7 @@ export function SiteHeader() {
         className={isMobileMenuOpen ? "mobile-nav open" : "mobile-nav"}
         aria-label="Mobile navigation"
       >
-        {navItems.map((item) => (
+        {navLinks.map((item) => (
           <Link
             key={item.href}
             className={pathname === item.href ? "active" : ""}

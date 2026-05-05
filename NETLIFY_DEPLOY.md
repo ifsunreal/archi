@@ -1,24 +1,37 @@
-## Netlify deployment checklist
+## Vercel deployment checklist
 
-This file lists the exact steps to deploy this Next.js + Sanity site to Netlify.
+This file lists the exact steps to deploy this Next.js + Firebase site to Vercel.
 
-1) Repo & Netlify setup
+1) Repo & Vercel setup
 - Push your repo to GitHub (or use existing remote).
-- In Netlify: Sites → Add new site → Import from Git.
+- In Vercel: Add New Project -> Import the repo.
 
-2) Netlify build settings
+2) Vercel build settings
+- Framework preset: Next.js
 - Build command: `npm run build`
-- Publish directory: leave empty (the Netlify Next plugin handles outputs)
-- Add plugin: `@netlify/plugin-nextjs` is already configured in `netlify.toml`.
-- Node: pin to Node 20 (configured via `netlify.toml` environment).
+- Output directory: leave default (Vercel handles Next output)
+- Node: 20+
 
-3) Required environment variables (set in Netlify Site → Site settings → Build & deploy → Environment)
-- `NEXT_PUBLIC_SANITY_PROJECT_ID` (e.g. vel2g5w8)
-- `NEXT_PUBLIC_SANITY_DATASET` (e.g. production)
-- `SANITY_API_READ_TOKEN` (only if needed at build time; rotate if exposed)
+3) Required environment variables (set in Vercel Project → Settings → Environment Variables)
 
-4) Sanity / CORS
-- If using Studio or authenticated requests from Netlify, add your Netlify site URL to Sanity CORS origins.
+Public (client SDK):
+- `NEXT_PUBLIC_FIREBASE_API_KEY`
+- `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`
+- `NEXT_PUBLIC_FIREBASE_PROJECT_ID`
+- `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`
+- `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+- `NEXT_PUBLIC_FIREBASE_APP_ID`
+- `NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID`
+
+Server (Admin SDK):
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_CLIENT_EMAIL`
+- `FIREBASE_PRIVATE_KEY`
+- `FIREBASE_STORAGE_BUCKET`
+
+4) Firebase security rules
+- Apply the rules in `firestore.rules` and `storage.rules`.
+- Add the first admin user to `admins/{uid}` in Firestore.
 
 5) Local verification (recommended before deploying)
 ```bash
@@ -32,17 +45,9 @@ npm run build
 npm run start
 ```
 
-If `next` is not found locally, ensure `node_modules` exists and `npm ci` succeeded.
+6) After deploy
+- Visit `/admin` and sign in.
+- Click "Seed Defaults" to populate initial content.
+- Verify public pages render Firestore content and uploaded images.
 
-6) Security notes
-- Do not commit `.env` files. Rotate any exposed Sanity tokens immediately via the Sanity project settings.
-
-7) Troubleshooting
-- If build fails on Netlify, check build logs for Node version mismatch or missing env vars.
-- Common local error: `'next' is not recognized` — run `npm ci` to restore CLI binaries.
-
-8) After deploy
-- Test the public site; verify images and Sanity-driven pages load.
-- If Studio is served under `/studio`, ensure you have the correct routing and CORS entries.
-
-If you want, I can now run `npm ci` and `npm run build` locally to verify the build — reply with `run build` to continue.
+If you want, I can run `npm ci` and `npm run build` locally to verify the build - reply with `run build` to continue.

@@ -1,11 +1,36 @@
-# Sanity Studio Client Guide
+# Admin Dashboard Client Guide
 
-Welcome! Your website content is managed through **Sanity Studio**. Here's how to work with images and content.
+Welcome! Your website content is managed through the **Admin Dashboard** using Firebase.
 
-## How to Access Studio
+## How to Access the Admin Dashboard
 
-Open: `http://localhost:3000/studio` (local development)  
-Or your production URL: `/studio`
+Open: `http://localhost:3000/login` (local development)  
+Or your production URL: `/login` (navbar Login link). After signing in you will be redirected to `/admin`.
+
+---
+
+## First-Time Setup (Admin Access)
+
+1. Create a Firebase Auth user (email + password).
+2. In Firestore, add a document in the `admins` collection:
+	- Document ID: the user's UID
+	- Fields: can be empty or `{ email: "name@domain.com" }`
+3. Sign in at `/admin` with that user.
+
+---
+
+## Content Management
+
+All site content is stored in one JSON document: `siteContent/main`.
+
+### Edit Content
+1. Sign in to `/admin`
+2. Open **Site Content JSON**
+3. Edit any text, image URL, or page section
+4. Click **Save**
+
+### Seed Defaults
+If Firestore is empty, click **Seed Defaults** to populate the starting content.
 
 ---
 
@@ -13,94 +38,36 @@ Or your production URL: `/studio`
 
 ### Where Images Are Stored
 
-✅ **Images are stored in Sanity's CDN** (not on your server)
-- Client uploads → Sanity servers → Automatic optimization → Global delivery
-- When you upload an image, it's immediately available on your site
+OK: **Images are stored in Firebase Storage**
+- Uploads -> Firebase Storage -> URL saved in Firestore
 
-### How to Upload/Change Images
+### How to Upload Images
 
-1. Open Sanity Studio
-2. Navigate to **Site Content** (singleton document)
-3. Go to the page group (Home, About, Projects, Contact)
-4. Click the **Image field** (e.g., Featured Design > Main Image)
-5. Click **Upload image** or drag-and-drop
-6. Sanity auto-optimizes and stores it
-7. **Publish** when done
-8. Website updates within seconds
-
-### Image Fields You Can Edit
-
-**Home Page:**
-- Featured Design Image
-- Showcase Tiles (2 images)
-
-**About Page:**
-- Sidebar Image
-- Award Image
-
-**Projects Page:**
-- Carousel Slide Images (4 slides)
-- Spotlight Project Image
-
-### Tips
-
-- Click the **image thumbnail** to preview or replace it
-- Images are compressed automatically for fast loading
-- You can delete images by clicking the X button
-- All uploads are version-controlled (Sanity keeps history)
+1. In `/admin`, open **Media Upload**
+2. Choose a folder (e.g., `home`, `projects`, `about`)
+3. Select an image file
+4. Copy the generated URL
+5. Paste it into the JSON for the relevant image field
 
 ---
 
-## Text Content Management
+## Editable Sections (JSON keys)
 
-### Home Page (editable fields)
-- Hero Eyebrow
-- Hero Title
-- Hero Paragraphs (2)
-- Hero Buttons
-- Featured Design details
-
-### About Page (editable fields)
-- Page Title
-- Sidebar Name & Subtitle
-- License Numbers (array)
-- Specializations (array)
-- Profile sections
-- Award Text
-- Architecture Principles
-- Services & descriptions
-
-### Projects Page (editable fields)
-- Showcase Title & Description
-- Carousel Slides (tag, title)
-- Portfolio Title
-- Filter Labels
-- Status Guide Cards
-- Featured Project details
-
-### Contact Page (editable fields)
-- Contact Form text
-- Contact details
-- Office Location
+- `global` -> logo, nav items, footer
+- `home` -> hero text, buttons, featured design, tiles
+- `about` -> profile, licenses, services, awards
+- `projectsPage` -> featured spotlight + extra panels
+- `projectItems` -> all project cards and detail pages
+- `contact` -> office info, contact details
+- `gallery` -> gallery items
 
 ---
 
 ## Publishing Changes
 
 After editing:
-1. Click **Publish** button (top right)
-2. Your changes go live within seconds
-3. Site automatically refreshes with new content
-
----
-
-## Need Help?
-
-All fields in Studio have **descriptions** and **validation**. If a field shows an error:
-- Check the description below the field
-- Fill in required fields (marked with *)
-- Ensure URLs start with http/https
-- Ensure emails are valid format
+1. Click **Save**
+2. Your changes go live immediately
 
 ---
 
@@ -108,5 +75,4 @@ All fields in Studio have **descriptions** and **validation**. If a field shows 
 
 - Upload images in **modern formats** (AVIF, WebP, JPG)
 - Use images **1200px wide or larger** for best quality
-- Sanity auto-crops via **hotspot** (click the crop tool)
-- Large images are automatically compressed
+- Keep file names short and clear
