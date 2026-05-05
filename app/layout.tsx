@@ -6,6 +6,9 @@ import { SiteRuntimeScript } from "../components/site-runtime-script";
 export const metadata: Metadata = {
   title: "JCCHUA & Associates",
   description: "Sustainable residential and commercial architecture by Arch. Joseph C. Chua.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
